@@ -26,6 +26,7 @@ function App() {
               }.png`}
               alt={pokemon.name}
               className="w-20 h-20"
+              loading="lazy"
             />
           </div>
         ))}
