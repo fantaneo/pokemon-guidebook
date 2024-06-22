@@ -12,12 +12,17 @@ function App() {
   }, []);
 
   return (
-    <div>
-      {pokemons.map((pokemon) => (
-        <div key={pokemon.name}>
-          <h1>{pokemon.name}</h1>
-        </div>
-      ))}
+    <div className="p-5">
+      <div className="grid grid-cols-3 gap-4">
+        {pokemons.map((pokemon) => (
+          <div
+            key={pokemon.name}
+            className="bg-gray-200 rounded-lg shadow-md p-4"
+          >
+            <h1 className="text-lg font-bold">{pokemon.name}</h1>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
