@@ -20,6 +20,13 @@ function App() {
             className="bg-gray-200 rounded-lg shadow-md p-4"
           >
             <h1 className="text-lg font-bold">{pokemon.name}</h1>
+            <img
+              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
+                pokemon.url.split("/")[pokemon.url.split("/").length - 2]
+              }.png`}
+              alt={pokemon.name}
+              className="w-20 h-20"
+            />
           </div>
         ))}
       </div>
