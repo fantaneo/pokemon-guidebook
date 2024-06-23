@@ -5,22 +5,14 @@ export default function PokemonCards() {
   const [pokemons, setPokemons] = useState([]);
 
   useEffect(() => {
-    let isMounted = true;
-
     fetch("https://pokeapi.co/api/v2/pokemon?limit=50")
       .then((res) => res.json())
       .then((data) => {
-        // console.log(data);
-        if (isMounted) {
-          setPokemons(data.results);
-        }
+        setPokemons(data.results);
       })
       .catch((error) =>
         console.error("Error fetching initial pokemon data:", error)
       );
-    return () => {
-      isMounted = false;
-    };
   }, []);
 
   return (
