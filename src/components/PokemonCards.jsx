@@ -5,7 +5,7 @@ export default function PokemonCards() {
   const [pokemons, setPokemons] = useState([]);
 
   useEffect(() => {
-    fetch("https://pokeapi.co/api/v2/pokemon?limit=50")
+    fetch("https://pokeapi.co/api/v2/pokemon?limit=20")
       .then((res) => res.json())
       .then((data) => {
         setPokemons(data.results);

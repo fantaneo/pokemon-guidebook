@@ -16,29 +16,39 @@ export default function PokemonCard({ pokemon }) {
     return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${url}.png`;
   };
 
-  const getPokemonName = (speciesData) => {
-    return (
-      speciesData.names.find((name) => name.language.name === "ja-Hrkt") || {
-        name: "名前なし",
-      }
-    );
+  const getPokemonName = async (url) => {
+    try {
+      const res = await fetch(url);
+      const speciesData = await res.json();
+      return (
+        speciesData.names.find((name) => name.language.name === "ja-Hrkt") || {
+          name: "名前なし",
+        }
+      );
+    } catch (error) {
+      console.error("Error fetching species name:", error);
+      return { name: "名前なし" };
+    }
   };
 
   useEffect(() => {
-    const fetchPokemon = () =>
-      fetch(`https://pokeapi.co/api/v2/pokemon-species/${pokemon.name}`)
+    const fetchPokemon = async () => {
+      fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon.name}`)
         .then((res) => res.json())
-        .then((speciesData) => {
-          const jpName = getPokemonName(speciesData);
+        .then(async (pokemonData) => {
+          const speciesData = pokemonData.species;
+          const jpName = await getPokemonName(speciesData.url);
           setPokemonDetails({
             id: pokemon.name,
             name: jpName.name,
             image: pokemonImageUrl(pokemon.url),
+            stats: pokemonData.stats,
           });
         })
         .catch((error) =>
           console.error("Error fetching species details:", error)
         );
+    };
     fetchPokemon();
   }, [pokemon.name, pokemon.url]);
 
@@ -57,6 +67,14 @@ export default function PokemonCard({ pokemon }) {
         alt={pokemonDetails.name}
         className="w-20 h-20"
       />
+      <ul>
+        {pokemonDetails.stats.map((stat) => (
+          <li key={stat.stat.name} className="text-left">
+            {stat.stat.name}:{" "}
+            <span className="text-xl font-bold">{stat.base_stat}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
