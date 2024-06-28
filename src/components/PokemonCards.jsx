@@ -7,7 +7,7 @@ export default function PokemonCards() {
   const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
-    fetch("https://pokeapi.co/api/v2/pokemon?limit=1")
+    fetch("https://pokeapi.co/api/v2/pokemon?limit=10")
       .then((res) => res.json())
       .then((data) => {
         setPokemons(data.results);
