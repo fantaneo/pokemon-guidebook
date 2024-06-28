@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
-export default function PokemonCard({ pokemon }) {
-  PokemonCard.propTypes = {
-    pokemon: PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      url: PropTypes.string.isRequired,
-    }).isRequired,
-  };
+PokemonCard.propTypes = {
+  pokemon: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    url: PropTypes.string.isRequired,
+  }).isRequired,
+  toggleFavorite: PropTypes.func.isRequired,
+  isFavorite: PropTypes.bool.isRequired,
+};
 
-  const [pokemonDetails, setPokemonDetails] = useState(null);
+export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
+  const [pokemonDetail, setPokemonDetail] = useState(null);
 
   const pokemonImageUrl = (imageUrl) => {
     const url = imageUrl.split("/").filter(Boolean).pop();
@@ -38,7 +40,7 @@ export default function PokemonCard({ pokemon }) {
         .then(async (pokemonData) => {
           const speciesData = pokemonData.species;
           const jpName = await getPokemonName(speciesData.url);
-          setPokemonDetails({
+          setPokemonDetail({
             id: pokemon.name,
             name: jpName.name,
             image: pokemonImageUrl(pokemon.url),
@@ -52,23 +54,25 @@ export default function PokemonCard({ pokemon }) {
     fetchPokemon();
   }, [pokemon.name, pokemon.url]);
 
-  if (!pokemonDetails) {
+  if (!pokemonDetail) {
     return null;
   }
 
   return (
     <div
-      key={pokemonDetails.id}
+      key={pokemonDetail.id}
       className="bg-gray-200 rounded-lg shadow-md p-4"
     >
-      <h1 className="text-lg font-bold">{pokemonDetails.name}</h1>
+      <button onClick={() => toggleFavorite()}>{isFavorite ? "♥" : "♡"}</button>
+
+      <h1 className="text-lg font-bold">{pokemonDetail.name}</h1>
       <img
-        src={pokemonDetails.image}
-        alt={pokemonDetails.name}
+        src={pokemonDetail.image}
+        alt={pokemonDetail.name}
         className="w-20 h-20"
       />
       <ul>
-        {pokemonDetails.stats.map((stat) => (
+        {pokemonDetail.stats.map((stat) => (
           <li key={stat.stat.name} className="text-left">
             {stat.stat.name}:{" "}
             <span className="text-xl font-bold">{stat.base_stat}</span>
