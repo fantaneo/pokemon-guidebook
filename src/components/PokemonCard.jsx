@@ -7,7 +7,7 @@ PokemonCard.propTypes = {
     url: PropTypes.string.isRequired,
   }).isRequired,
   toggleFavorite: PropTypes.func.isRequired,
-  isFavorite: PropTypes.bool.isRequired,
+  isFavorite: PropTypes.func.isRequired,
 };
 
 export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
@@ -63,7 +63,9 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
       key={pokemonDetail.id}
       className="bg-gray-200 rounded-lg shadow-md p-4"
     >
-      <button onClick={() => toggleFavorite()}>{isFavorite ? "♥" : "♡"}</button>
+      <button onClick={() => toggleFavorite()}>
+        {isFavorite() ? "♥" : "♡"}
+      </button>
 
       <h1 className="text-lg font-bold">{pokemonDetail.name}</h1>
       <img

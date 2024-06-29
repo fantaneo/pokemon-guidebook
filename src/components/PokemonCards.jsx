@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import PokemonCard from "./PokemonCard";
 import FavoritesList from "./FavoritesList";
+import { favoritesReducer, initialState, isFavorite } from "./FavoriteReducer";
 
 export default function PokemonCards() {
   const [pokemons, setPokemons] = useState([]);
-  const [favorites, setFavorites] = useState([]);
+  const [state, dispatch] = useReducer(favoritesReducer, initialState);
 
   useEffect(() => {
     fetch("https://pokeapi.co/api/v2/pokemon?limit=10")
@@ -19,37 +20,27 @@ export default function PokemonCards() {
 
   useEffect(() => {
     const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-    setFavorites(favorites);
+    favorites.forEach((pokemon) =>
+      dispatch({ type: "ADD_FAVORITE", payload: pokemon })
+    );
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("favorites", JSON.stringify(favorites));
-  }, [favorites]);
-
-  const isFavorite = (pokemon) => {
-    return favorites.some((fav) => fav.name === pokemon.name);
-  };
-
-  const toggleFavorite = (pokemon) => {
-    const fav = [...favorites];
-    if (fav.includes(pokemon)) {
-      fav.splice(fav.indexOf(pokemon), 1);
-    } else {
-      fav.push(pokemon);
-    }
-    setFavorites(fav);
-  };
+    localStorage.setItem("favorites", JSON.stringify(state.favorites));
+  }, [state.favorites]);
 
   return (
     <div className="p-5">
-      <FavoritesList favorites={favorites} />
+      <FavoritesList favorites={state.favorites} />
       <div className="grid grid-cols-3 gap-4">
         {pokemons.map((pokemon, index) => (
           <PokemonCard
             key={index}
             pokemon={pokemon}
-            isFavorite={isFavorite(pokemon)}
-            toggleFavorite={() => toggleFavorite(pokemon)}
+            isFavorite={() => isFavorite(state, pokemon)}
+            toggleFavorite={() =>
+              dispatch({ type: "TOGGLE_FAVORITE", payload: pokemon })
+            }
           />
         ))}
       </div>
