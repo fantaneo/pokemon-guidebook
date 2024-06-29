@@ -1,23 +1,18 @@
-export const initialState = {
-  favorites: [],
+export const initialState = [];
+
+export const isFavorite = (favorites, pokemon) => {
+  return favorites.some((fav) => fav.name === pokemon.name);
 };
 
-export const isFavorite = (state, pokemon) => {
-  return state.favorites.some((fav) => fav.name === pokemon.name);
-};
-
-export const favoritesReducer = (state, action) => {
+export const favoritesReducer = (favorites, action) => {
   switch (action.type) {
     case "ADD_FAVORITE":
-      return { ...state, favorites: [...state.favorites, action.payload] };
+      return [...favorites, action.payload];
     case "TOGGLE_FAVORITE":
-      return {
-        ...state,
-        favorites: isFavorite(state, action.payload)
-          ? state.favorites.filter((fav) => fav.name !== action.payload.name)
-          : [...state.favorites, action.payload],
-      };
+      return isFavorite(favorites, action.payload)
+        ? favorites.filter((fav) => fav.name !== action.payload.name)
+        : [...favorites, action.payload];
     default:
-      return state;
+      return favorites;
   }
 };

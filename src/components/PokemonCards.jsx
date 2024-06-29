@@ -5,7 +5,7 @@ import { favoritesReducer, initialState, isFavorite } from "./FavoriteReducer";
 
 export default function PokemonCards() {
   const [pokemons, setPokemons] = useState([]);
-  const [state, dispatch] = useReducer(favoritesReducer, initialState);
+  const [favorites, dispatch] = useReducer(favoritesReducer, initialState);
 
   useEffect(() => {
     fetch("https://pokeapi.co/api/v2/pokemon?limit=10")
@@ -19,25 +19,25 @@ export default function PokemonCards() {
   }, []);
 
   useEffect(() => {
-    const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-    favorites.forEach((pokemon) =>
+    const _favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+    _favorites.forEach((pokemon) =>
       dispatch({ type: "ADD_FAVORITE", payload: pokemon })
     );
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("favorites", JSON.stringify(state.favorites));
-  }, [state.favorites]);
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+  }, [favorites]);
 
   return (
     <div className="p-5">
-      <FavoritesList favorites={state.favorites} />
+      <FavoritesList favorites={favorites} />
       <div className="grid grid-cols-3 gap-4">
         {pokemons.map((pokemon, index) => (
           <PokemonCard
             key={index}
             pokemon={pokemon}
-            isFavorite={() => isFavorite(state, pokemon)}
+            isFavorite={() => isFavorite(favorites, pokemon)}
             toggleFavorite={() =>
               dispatch({ type: "TOGGLE_FAVORITE", payload: pokemon })
             }
