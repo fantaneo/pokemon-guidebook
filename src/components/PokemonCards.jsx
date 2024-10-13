@@ -2,6 +2,10 @@ import { useEffect, useReducer, useState } from "react";
 import PokemonCard from "./PokemonCard";
 import FavoritesList from "./FavoritesList";
 import { favoritesReducer, initialState, isFavorite } from "./FavoriteReducer";
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Menu, X } from "lucide-react"
 
 export default function PokemonCards() {
   const [pokemons, setPokemons] = useState([]);
@@ -31,6 +35,8 @@ export default function PokemonCards() {
 
   return (
     <div className="p-5">
+      <Button variant="ghost" size="icon">
+      </Button>
       <FavoritesList favorites={favorites} />
       <div className="grid grid-cols-3 gap-4">
         {pokemons.map((pokemon, index) => (
