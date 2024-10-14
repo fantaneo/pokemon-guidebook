@@ -55,7 +55,13 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
   }, [pokemon.name, pokemon.url]);
 
   if (!pokemonDetail) {
-    return null;
+    return (
+      <div className="bg-gray-200 rounded-lg shadow-md p-4">
+        <div className="flex justify-center items-center h-full">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+        </div>
+      </div>
+    );
   }
 
   return (
