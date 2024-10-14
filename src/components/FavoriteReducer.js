@@ -7,7 +7,9 @@ export const isFavorite = (favorites, pokemon) => {
 export const favoritesReducer = (favorites, action) => {
   switch (action.type) {
     case "ADD_FAVORITE":
-      return [...favorites, action.payload];
+      return isFavorite(favorites, action.payload)
+        ? favorites
+        : [...favorites, action.payload];
     case "TOGGLE_FAVORITE":
       return isFavorite(favorites, action.payload)
         ? favorites.filter((fav) => fav.name !== action.payload.name)

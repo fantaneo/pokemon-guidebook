@@ -1,25 +1,33 @@
-import { useEffect, useState } from "react";
-import PokemonCard from "./PokemonCard";
-import { isFavorite } from "./FavoriteReducer";
+import { useContext } from "react";
+import { FavoritesContext } from "./FavoritesContext.jsx";
+import { useEffect } from "react";
 import Header from "./Header";
 import SideMenu from "./SideMenu";
-import { FavoritesContext } from "./FavoritesContext.jsx";
-import { useContext } from "react";
+import PokemonCard from "./PokemonCard";
+import { useState } from "react";
+import { isFavorite } from "./FavoriteReducer";
 
-export default function PokemonCards() {
-  const [pokemons, setPokemons] = useState([]);
+export default function Favorites() {
   const { favorites, dispatch } = useContext(FavoritesContext);
+  const [pokemons, setPokemons] = useState([]);
 
   useEffect(() => {
-    fetch("https://pokeapi.co/api/v2/pokemon?limit=12")
-      .then((res) => res.json())
-      .then((data) => {
-        setPokemons(data.results);
-      })
-      .catch((error) =>
-        console.error("Error fetching initial pokemon data:", error)
+    const favoritePokemons = favorites.map((favorite) => {
+      return fetch(`https://pokeapi.co/api/v2/pokemon/${favorite.name}`).then(
+        (res) => res.json()
       );
-  }, []);
+    });
+    Promise.all(favoritePokemons).then((fpokemons) => {
+      setPokemons(
+        fpokemons.map((p) => {
+          return {
+            name: p.species.name,
+            url: p.species.url,
+          };
+        })
+      );
+    });
+  }, [favorites]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -30,6 +38,7 @@ export default function PokemonCards() {
         </aside>
         <main className="flex-1 p-6">
           <div className="p-5">
+            <h2 className="text-2xl font-bold mb-4">お気に入りリスト</h2>
             <div className="grid grid-cols-3 gap-4">
               {pokemons.map((pokemon, index) => (
                 <PokemonCard
