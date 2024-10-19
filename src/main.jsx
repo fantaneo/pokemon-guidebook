@@ -8,6 +8,7 @@ import { FavoritesProvider } from "./components/FavoritesContext.jsx";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { TypeProvider } from "./contexts/TypeContext.jsx";
 import { SearchProvider } from "./contexts/SearchContext.jsx"; // 正しいパスからインポートしていることを確認
+import { StatsFilterProvider } from "./contexts/StatsFilterContext";
 
 // QueryClient のインスタンスを作成
 const queryClient = new QueryClient();
@@ -18,13 +19,15 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <FavoritesProvider>
         <TypeProvider>
           <SearchProvider>
-            <Router>
-              <Routes>
-                <Route path="/" element={<PokemonCards />} />
-                <Route path="/pokemons" element={<PokemonCards />} />
-                <Route path="/favorites" element={<Favorites />} />
-              </Routes>
-            </Router>
+            <StatsFilterProvider>
+              <Router>
+                <Routes>
+                  <Route path="/" element={<PokemonCards />} />
+                  <Route path="/pokemons" element={<PokemonCards />} />
+                  <Route path="/favorites" element={<Favorites />} />
+                </Routes>
+              </Router>
+            </StatsFilterProvider>
           </SearchProvider>
         </TypeProvider>
       </FavoritesProvider>

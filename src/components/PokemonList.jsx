@@ -4,6 +4,7 @@ import PokemonCard from "./PokemonCard";
 import { useContext } from "react";
 import { FavoritesContext } from "./FavoritesContext.jsx";
 import { isFavorite } from "./FavoriteReducer";
+import { useStatsFilterContext } from "../contexts/StatsFilterContext";
 
 export default function PokemonList({
   data,
@@ -16,6 +17,7 @@ export default function PokemonList({
 }) {
   const { favorites, dispatch } = useContext(FavoritesContext);
   const observer = useRef();
+  const { attackFilter } = useStatsFilterContext();
 
   const checkIsFavorite = useCallback(
     (pokemon) => {
@@ -43,6 +45,17 @@ export default function PokemonList({
     }
   }, [filteredPokemons, hasNextPage, fetchNextPage]);
 
+  const finalFilteredPokemons = useMemo(() => {
+    return filteredPokemons.filter(
+      (pokemon) =>
+        (pokemon.name.toLowerCase().includes(filterText.toLowerCase()) ||
+          (pokemon.japaneseName &&
+            pokemon.japaneseName.includes(filterText))) &&
+        pokemon.stats.find((stat) => stat.name === "attack").value >=
+          attackFilter
+    );
+  }, [filteredPokemons, filterText, attackFilter]);
+
   if (status === "loading") {
     return <p>ポケモンデータを読み込んでいます...</p>;
   }
@@ -54,11 +67,11 @@ export default function PokemonList({
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 p-4">
-        {filteredPokemons.map((pokemon, index) => (
+        {finalFilteredPokemons.map((pokemon, index) => (
           <div
             key={`${pokemon.name}-${index}`}
             ref={
-              index === filteredPokemons.length - 1
+              index === finalFilteredPokemons.length - 1
                 ? lastPokemonElementRef
                 : null
             }
@@ -78,10 +91,12 @@ export default function PokemonList({
         ))}
       </div>
       {isFetchingNextPage && <p>ポケモンをさらに読み込んでいます...</p>}
-      {!hasNextPage && filteredPokemons.length > 0 && (
+      {!hasNextPage && finalFilteredPokemons.length > 0 && (
         <p>すべてのポケモンを読み込みました</p>
       )}
-      {filteredPokemons.length === 0 && <p>該当するポケモンが見つかりません</p>}
+      {finalFilteredPokemons.length === 0 && (
+        <p>該当するポケモンが見つかりません</p>
+      )}
     </>
   );
 }

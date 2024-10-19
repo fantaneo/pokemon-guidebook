@@ -5,10 +5,13 @@ import { useTypeContext } from "../hooks/useTypeContext";
 import SearchBar from "./SearchBar";
 import { FaHome, FaHeart, FaSearch } from "react-icons/fa";
 import { MdChevronRight } from "react-icons/md";
+import { useStatsFilterContext } from "../contexts/StatsFilterContext";
+import { CustomSlider } from "../components/ui/custom-slider";
 
 export default function SideMenu() {
   const location = useLocation();
   const { selectedTypes, handleTypeSelect } = useTypeContext();
+  const { attackFilter, setAttackFilter } = useStatsFilterContext();
   const menuItems = [
     { name: "ホーム", href: "/pokemons", icon: <FaHome /> },
     { name: "お気に入り", href: "/favorites", icon: <FaHeart /> },
@@ -56,6 +59,18 @@ export default function SideMenu() {
             {type}
           </button>
         ))}
+      </div>
+      <h2 className="mt-8 mb-4 text-lg font-semibold text-gray-800">
+        こうげき {attackFilter} 以上
+      </h2>
+      <div className="flex flex-col space-y-2">
+        <CustomSlider
+          min={0}
+          max={150}
+          step={1}
+          value={[attackFilter]}
+          onValueChange={(value) => setAttackFilter(value[0])}
+        />
       </div>
     </ScrollArea>
   );

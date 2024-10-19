@@ -6,12 +6,14 @@ import { useTypeFiltering } from "../hooks/useTypeFiltering";
 import { useTypeContext } from "../hooks/useTypeContext";
 import { useSearchContext } from "../contexts/SearchContext";
 import Layout from "./Layout";
+import { useStatsFilterContext } from "../contexts/StatsFilterContext";
 
 export default function Favorites() {
   const { favorites, dispatch } = useContext(FavoritesContext);
   const [pokemons, setPokemons] = useState([]);
   const { selectedTypes } = useTypeContext();
   const { filterText } = useSearchContext();
+  const { attackFilter } = useStatsFilterContext();
 
   useEffect(() => {
     const storedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
@@ -23,10 +25,13 @@ export default function Favorites() {
   const finalFilteredPokemons = useMemo(() => {
     return filteredPokemons.filter(
       (pokemon) =>
-        pokemon.name.toLowerCase().includes(filterText.toLowerCase()) ||
-        (pokemon.japaneseName && pokemon.japaneseName.includes(filterText))
+        (pokemon.name.toLowerCase().includes(filterText.toLowerCase()) ||
+          (pokemon.japaneseName &&
+            pokemon.japaneseName.includes(filterText))) &&
+        pokemon.stats.find((stat) => stat.name === "attack").value >=
+          attackFilter
     );
-  }, [filteredPokemons, filterText]);
+  }, [filteredPokemons, filterText, attackFilter]);
 
   const checkIsFavorite = useCallback(
     (pokemon) => {
