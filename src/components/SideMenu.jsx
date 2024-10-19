@@ -1,9 +1,11 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { POKEMON_TYPES } from "../constants/pokemonTypes";
+import { MdArrowForwardIos } from "react-icons/md";
 
 // eslint-disable-next-line react/prop-types
 export default function SideMenu({ selectedTypes, onTypeSelect }) {
+  const location = useLocation();
   const menuItems = [
     { name: "ポケモン", href: "/pokemons" },
     { name: "お気に入り", href: "/favorites" },
@@ -17,9 +19,16 @@ export default function SideMenu({ selectedTypes, onTypeSelect }) {
           <Link
             key={item.name}
             to={item.href}
-            className="rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+            className={`rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground flex items-center justify-between ${
+              location.pathname === item.href
+                ? "bg-accent text-accent-foreground font-medium"
+                : ""
+            }`}
           >
             {item.name}
+            {location.pathname === item.href && (
+              <MdArrowForwardIos className="ml-2" />
+            )}
           </Link>
         ))}
       </nav>
