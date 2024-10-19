@@ -162,59 +162,57 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
         </div>
       </div>
 
-      {/* 裏面 (��力値) */}
+      {/* 裏面 (能力値) */}
       <div
         className={`absolute w-full h-full ${cardFace === 1 ? "" : "hidden"}`}
       >
-        <div className="w-full h-full flex flex-col items-center justify-between p-4 bg-gradient-to-br from-gray-100 to-gray-300 rounded-xl">
-          <div>
-            <div className="flex items-center mb-2">
-              <div className="flex flex-col items-start mr-4">
-                <h2 className="text-xl font-bold">
-                  {pokemon.japaneseName || pokemon.name}
-                </h2>
-                {pokemon.category && (
-                  <p className="text-sm text-gray-600">{pokemon.category}</p>
-                )}
-              </div>
-              <img
-                src={pokemon.sprites.front_default}
-                alt={pokemon.name}
-                className="w-16 h-16 object-contain"
-              />
+        <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-gray-100 to-gray-300 rounded-xl">
+          <div className="flex items-center mb-2">
+            <div className="flex flex-col items-start mr-4">
+              <h2 className="text-xl font-bold">
+                {pokemon.japaneseName || pokemon.name}
+              </h2>
+              {pokemon.category && (
+                <p className="text-sm text-gray-600">{pokemon.category}</p>
+              )}
             </div>
-            <div className="flex gap-2 mb-3">
-              {pokemon.types.map((type) => (
-                <span
-                  key={type}
-                  className="px-2 py-1 rounded-full text-xs font-semibold text-white"
-                  style={{ backgroundColor: getTypeColor(type) }}
-                >
-                  {typeTranslations[type.toLowerCase()] || type}
-                </span>
-              ))}
-            </div>
+            <img
+              src={pokemon.sprites.front_default}
+              alt={pokemon.name}
+              className="w-16 h-16 object-contain"
+            />
           </div>
-          <ul className="w-full mb-2">
+          <div className="flex gap-2 mb-4">
+            {pokemon.types.map((type) => (
+              <span
+                key={type}
+                className="px-2 py-1 rounded-full text-xs font-semibold text-white"
+                style={{ backgroundColor: getTypeColor(type) }}
+              >
+                {typeTranslations[type.toLowerCase()] || type}
+              </span>
+            ))}
+          </div>
+          <ul className="w-full">
             {pokemon.stats.map((stat, index) => (
               <li
                 key={stat.name}
-                className="flex justify-between items-center mb-2"
+                className="flex justify-between items-center mb-1"
               >
-                <span className="text-sm font-medium w-20">
+                <span className="text-base font-medium w-24">
                   {statTranslations[stat.name] || stat.name}:
                 </span>
                 <span
-                  className={`text-lg font-bold w-12 text-right mr-2 ${
+                  className={`text-2xl font-bold w-16 text-right mr-2 ${
                     stat.value === maxStat ? "text-indigo-700" : ""
                   } ${animateStats ? "animate-stat-pop" : ""}`}
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   {stat.value}
                 </span>
-                <div className="w-1/2 bg-gray-200 rounded-full h-2">
+                <div className="w-1/2 bg-gray-200 rounded-full h-3">
                   <div
-                    className={`h-2 rounded-full ${
+                    className={`h-3 rounded-full ${
                       stat.value === maxStat ? "bg-indigo-600" : "bg-teal-500"
                     } ${animateStats ? "animate-stat-bar" : ""}`}
                     style={{
@@ -257,7 +255,7 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
             {pokemon.types.map((type) => (
               <span
                 key={type}
-                className="px-2 py-1 rounded-full text-xs font-semibold text-white"
+                className="px-2 py-1 rounded-full text-sm font-semibold text-white"
                 style={{ backgroundColor: getTypeColor(type) }}
               >
                 {typeTranslations[type.toLowerCase()] || type}
@@ -265,17 +263,17 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
             ))}
           </div>
           <div className="flex mt-1">
-            <span className="text-xs font-semibold mr-2 w-12">体格:</span>
+            <span className="text-sm font-semibold mr-2 w-12">体格:</span>
             <div>
-              <p className="text-xs">身長: {pokemon.height / 10}m</p>
-              <p className="text-xs">体重: {pokemon.weight / 10}kg</p>
+              <p className="text-sm">身長: {pokemon.height / 10}m</p>
+              <p className="text-sm">体重: {pokemon.weight / 10}kg</p>
             </div>
           </div>
           <div className="flex mt-1">
-            <span className="text-xs font-semibold mr-2 w-12">特性:</span>
+            <span className="text-sm font-semibold mr-2 w-12">特性:</span>
             <ul className="list-none">
               {pokemon.abilities.map((ability, index) => (
-                <li key={index} className="text-xs">
+                <li key={index} className="text-sm">
                   {getAbilityJapaneseName(ability.name)}
                   {ability.is_hidden && " (隠れ特性)"}
                 </li>
@@ -283,21 +281,20 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
             </ul>
           </div>
           <div className="mt-2">
-            <span className="text-xs font-semibold mb-1 block">能力値:</span>
             <div className="grid grid-cols-2 gap-x-2 gap-y-1">
               {pokemon.stats.map((stat) => (
                 <div key={stat.name} className="flex justify-between">
-                  <span className="text-xs font-medium">
+                  <span className="text-sm font-medium">
                     {statTranslations[stat.name] || stat.name}:
                   </span>
-                  <span className="text-xs font-bold">{stat.value}</span>
+                  <span className="text-sm font-bold">{stat.value}</span>
                 </div>
               ))}
             </div>
           </div>
           <div className="flex-grow" />
           <div className="mt-1">
-            <p className="text-xs text-gray-800 overflow-y-auto max-h-20">
+            <p className="text-sm text-gray-800 overflow-y-auto max-h-20">
               {pokemon.description}
             </p>
           </div>
