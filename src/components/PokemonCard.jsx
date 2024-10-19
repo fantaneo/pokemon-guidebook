@@ -20,6 +20,7 @@ PokemonCard.propTypes = {
       })
     ).isRequired,
     category: PropTypes.string,
+    description: PropTypes.string,
   }).isRequired,
   toggleFavorite: PropTypes.func.isRequired,
   isFavorite: PropTypes.bool.isRequired,
@@ -56,10 +57,10 @@ const statTranslations = {
 };
 
 export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [cardFace, setCardFace] = useState(0); // 0: 表面, 1: 裏面, 2: フレーバーテキスト
 
   const handleCardFlip = () => {
-    setIsFlipped(!isFlipped);
+    setCardFace((prevFace) => (prevFace + 1) % 3);
   };
 
   const getTypeColor = (type) => {
@@ -86,17 +87,27 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
     </button>
   );
 
+  const CardIndicator = () => (
+    <div className="absolute bottom-2 left-0 right-0 flex justify-center space-x-2">
+      {[0, 1, 2].map((index) => (
+        <div
+          key={index}
+          className={`w-2 h-2 rounded-full ${
+            cardFace === index ? "bg-blue-500" : "bg-gray-300"
+          }`}
+        />
+      ))}
+    </div>
+  );
+
   return (
     <div
-      className={`relative w-64 h-96 rounded-xl shadow-lg transition-transform duration-300 transform ${
-        isFlipped ? "rotate-y-180" : ""
-      }`}
+      className="relative w-64 h-96 rounded-xl shadow-lg transition-transform duration-300 transform cursor-pointer"
       onClick={handleCardFlip}
     >
+      {/* 表面 */}
       <div
-        className={`absolute w-full h-full backface-hidden ${
-          isFlipped ? "hidden" : ""
-        }`}
+        className={`absolute w-full h-full ${cardFace === 0 ? "" : "hidden"}`}
       >
         <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-gray-100 to-gray-300 rounded-xl">
           <img
@@ -125,13 +136,16 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
           <FavoriteButton />
         </div>
       </div>
+
+      {/* 裏面 */}
       <div
-        className={`absolute w-full h-full backface-hidden rotate-y-180 ${
-          isFlipped ? "" : "hidden"
-        }`}
+        className={`absolute w-full h-full ${cardFace === 1 ? "" : "hidden"}`}
       >
-        <div className="w-full h-full flex flex-col items-center justify-between p-4 bg-gradient-to-br from-gray-100 to-gray-300 rounded-xl">
-          <h3 className="text-lg font-bold mb-2">能力値</h3>
+        <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-gray-100 to-gray-300 rounded-xl">
+          <h2 className="text-xl font-bold mb-2">
+            {pokemon.japaneseName || pokemon.name}
+          </h2>
+          <p className="text-sm text-gray-600 mb-4">{pokemon.category}</p>
           <ul className="w-full">
             {pokemon.stats.map((stat) => (
               <li
@@ -166,6 +180,21 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
           <FavoriteButton />
         </div>
       </div>
+
+      {/* フレーバーテキスト */}
+      <div
+        className={`absolute w-full h-full ${cardFace === 2 ? "" : "hidden"}`}
+      >
+        <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-gray-100 to-gray-300 rounded-xl">
+          <h2 className="text-xl font-bold mb-4">
+            {pokemon.japaneseName || pokemon.name}
+          </h2>
+          <p className="text-sm text-gray-800 mb-4">{pokemon.description}</p>
+          <FavoriteButton />
+        </div>
+      </div>
+
+      <CardIndicator />
     </div>
   );
 }

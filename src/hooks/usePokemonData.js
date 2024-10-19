@@ -6,6 +6,25 @@ const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24時間
 const TOTAL_POKEMONS = 151;
 const POKEMONS_PER_PAGE = 10;
 
+const fetchPokemonDetails = async (speciesUrl) => {
+  const response = await fetch(speciesUrl);
+  const data = await response.json();
+
+  const japaneseName =
+    data.names.find((name) => name.language.name === "ja")?.name || "";
+
+  const japaneseCategoryEntry = data.genera.find(
+    (entry) => entry.language.name === "ja-Hrkt"
+  );
+  const category = japaneseCategoryEntry ? japaneseCategoryEntry.genus : "";
+
+  const japaneseFlavorText =
+    data.flavor_text_entries.find((entry) => entry.language.name === "ja")
+      ?.flavor_text || "";
+
+  return { japaneseName, category, description: japaneseFlavorText };
+};
+
 const fetchAllPokemons = async () => {
   const response = await fetch(
     `https://pokeapi.co/api/v2/pokemon?limit=${TOTAL_POKEMONS}`
@@ -15,12 +34,14 @@ const fetchAllPokemons = async () => {
     data.results.map(async (pokemon) => {
       const detailResponse = await fetch(pokemon.url);
       const detailData = await detailResponse.json();
+      const speciesDetails = await fetchPokemonDetails(detailData.species.url);
+
       return {
         id: detailData.id,
         name: detailData.name,
-        url: pokemon.url, // この行を追加
+        url: pokemon.url,
         types: detailData.types.map((type) => type.type.name),
-        japaneseName: await fetchJapaneseName(detailData.species.url),
+        japaneseName: speciesDetails.japaneseName,
         stats: detailData.stats.map((stat) => ({
           name: stat.stat.name,
           value: stat.base_stat,
@@ -32,26 +53,12 @@ const fetchAllPokemons = async () => {
           front_default: detailData.sprites.front_default,
           back_default: detailData.sprites.back_default,
         },
-        category: await fetchPokemonCategory(detailData.species.url),
+        category: speciesDetails.category,
+        description: speciesDetails.description,
       };
     })
   );
   return detailedData;
-};
-
-const fetchJapaneseName = async (url) => {
-  const response = await fetch(url);
-  const data = await response.json();
-  return data.names.find((name) => name.language.name === "ja")?.name || "";
-};
-
-const fetchPokemonCategory = async (speciesUrl) => {
-  const response = await fetch(speciesUrl);
-  const data = await response.json();
-  const japaneseCategoryEntry = data.genera.find(
-    (entry) => entry.language.name === "ja-Hrkt"
-  );
-  return japaneseCategoryEntry ? japaneseCategoryEntry.genus : "";
 };
 
 export function usePokemonData() {
