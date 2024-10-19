@@ -1,15 +1,16 @@
-import { useContext, useState, useCallback } from "react";
+import { useContext, useState, useCallback, useEffect } from "react";
 import { FavoritesContext } from "./FavoritesContext.jsx";
-import { useEffect } from "react";
 import Header from "./Header";
 import SideMenu from "./SideMenu";
 import PokemonCard from "./PokemonCard";
 import { isFavorite } from "./FavoriteReducer";
+import { useTypeFiltering } from "../hooks/useTypeFiltering";
+import { useTypeContext } from "../contexts/TypeContext";
 
 export default function Favorites() {
   const { favorites, dispatch } = useContext(FavoritesContext);
   const [pokemons, setPokemons] = useState([]);
-  const [selectedTypes, setSelectedTypes] = useState([]);
+  const { selectedTypes } = useTypeContext();
 
   useEffect(() => {
     const favoritePokemons = favorites.map((favorite) => {
@@ -19,23 +20,16 @@ export default function Favorites() {
     });
     Promise.all(favoritePokemons).then((fpokemons) => {
       setPokemons(
-        fpokemons.map((p) => {
-          return {
-            name: p.species.name,
-            url: p.species.url,
-          };
-        })
+        fpokemons.map((p) => ({
+          name: p.species.name,
+          url: p.species.url,
+          types: p.types.map((type) => type.type.name),
+        }))
       );
     });
   }, [favorites]);
 
-  const handleTypeSelect = (type) => {
-    setSelectedTypes((prevTypes) =>
-      prevTypes.includes(type)
-        ? prevTypes.filter((t) => t !== type)
-        : [...prevTypes, type]
-    );
-  };
+  const { filteredPokemons } = useTypeFiltering(pokemons, selectedTypes);
 
   const checkIsFavorite = useCallback(
     (pokemon) => {
@@ -49,16 +43,13 @@ export default function Favorites() {
       <Header />
       <div className="flex flex-1">
         <aside className="hidden w-64 border-r lg:block">
-          <SideMenu
-            selectedTypes={selectedTypes}
-            onTypeSelect={handleTypeSelect}
-          />
+          <SideMenu />
         </aside>
         <main className="flex-1 p-6">
           <div className="p-5">
             <h2 className="text-2xl font-bold mb-4">お気に入りリスト</h2>
             <div className="grid grid-cols-3 gap-4">
-              {pokemons.map((pokemon, index) => (
+              {filteredPokemons.map((pokemon, index) => (
                 <PokemonCard
                   key={index}
                   pokemon={pokemon}

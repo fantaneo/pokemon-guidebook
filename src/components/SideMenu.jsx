@@ -2,10 +2,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Link, useLocation } from "react-router-dom";
 import { POKEMON_TYPES } from "../constants/pokemonTypes";
 import { MdArrowForwardIos } from "react-icons/md";
+import { useTypeContext } from "../contexts/TypeContext";
 
 // eslint-disable-next-line react/prop-types
 export default function SideMenu({ selectedTypes, onTypeSelect }) {
   const location = useLocation();
+  const { selectedTypes: contextSelectedTypes, handleTypeSelect } =
+    useTypeContext();
   const menuItems = [
     { name: "ポケモン", href: "/pokemons" },
     { name: "お気に入り", href: "/favorites" },
@@ -37,10 +40,9 @@ export default function SideMenu({ selectedTypes, onTypeSelect }) {
         {POKEMON_TYPES.map((type) => (
           <button
             key={type}
-            onClick={() => onTypeSelect(type)}
+            onClick={() => handleTypeSelect(type)}
             className={`px-2 py-1 text-sm rounded ${
-              // eslint-disable-next-line react/prop-types
-              selectedTypes.includes(type)
+              contextSelectedTypes.includes(type)
                 ? "bg-primary text-primary-foreground"
                 : "bg-secondary text-secondary-foreground"
             }`}
