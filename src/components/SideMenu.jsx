@@ -1,5 +1,5 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Link, useLocation } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 import { POKEMON_TYPES } from "../constants/pokemonTypes";
 import { useTypeContext } from "../hooks/useTypeContext";
 import SearchBar from "./SearchBar";
@@ -7,7 +7,6 @@ import { FaHome, FaHeart, FaSearch } from "react-icons/fa";
 import { MdChevronRight } from "react-icons/md";
 import { useStatsFilterContext } from "../contexts/StatsFilterContext";
 import { CustomSlider } from "../components/ui/custom-slider";
-import { Button } from "@/components/ui/button";
 import { FaUndo } from "react-icons/fa";
 
 export default function SideMenu() {
@@ -38,7 +37,7 @@ export default function SideMenu() {
       <h2 className="mb-4 text-lg font-semibold text-gray-800">メニュー</h2>
       <nav className="space-y-2 mb-8">
         {menuItems.map((item) => (
-          <Link
+          <RouterLink
             key={item.name}
             to={item.href}
             className={`flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${
@@ -52,7 +51,7 @@ export default function SideMenu() {
               <span>{item.name}</span>
             </span>
             <MdChevronRight className="text-lg" />
-          </Link>
+          </RouterLink>
         ))}
       </nav>
       <h2 className="mb-4 text-lg font-semibold text-gray-800 flex items-center">
@@ -69,7 +68,7 @@ export default function SideMenu() {
             className={`px-3 py-1 text-sm rounded-full transition-colors ${
               selectedTypes.includes(type)
                 ? "bg-blue-500 text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-blue-100"
+                : "bg-blue-100 text-blue-600 hover:bg-blue-200"
             }`}
           >
             {type}
@@ -78,13 +77,17 @@ export default function SideMenu() {
       </div>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-gray-800">能力値</h2>
-        <Button
-          onClick={resetStatsFilter}
-          className="px-3 py-1 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-300"
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            resetStatsFilter();
+          }}
+          className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors duration-200 ease-in-out focus:outline-none focus:underline"
         >
-          <FaUndo className="mr-2 text-gray-500" />
+          <FaUndo className="inline mr-2" />
           リセット
-        </Button>
+        </a>
       </div>
       <div className="space-y-12">
         {Object.entries(statNames).map(([key, name]) => (
@@ -101,6 +104,7 @@ export default function SideMenu() {
               step={1}
               value={[statsFilter[key]]}
               onValueChange={(value) => updateStatFilter(key, value[0])}
+              className="text-blue-500"
             />
           </div>
         ))}

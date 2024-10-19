@@ -20,10 +20,10 @@ const CustomSlider = React.forwardRef(({ className, ...props }, ref) => {
       )}
       {...props}
     >
-      <SliderPrimitive.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-secondary">
-        <SliderPrimitive.Range className="absolute h-full bg-primary" />
+      <SliderPrimitive.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-blue-100">
+        <SliderPrimitive.Range className="absolute h-full bg-blue-500" />
       </SliderPrimitive.Track>
-      <SliderPrimitive.Thumb className="block h-5 w-5 rounded-full border-2 border-primary bg-background ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50" />
+      <SliderPrimitive.Thumb className="block h-5 w-5 rounded-full border-2 border-blue-500 bg-white ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50" />
 
       {/* 目盛りを追加 */}
       <div className="absolute top-6 left-0 right-0 flex justify-between px-1">
@@ -33,8 +33,8 @@ const CustomSlider = React.forwardRef(({ className, ...props }, ref) => {
             className="flex flex-col items-center cursor-pointer"
             onClick={() => handleTickClick(value)}
           >
-            <div className="h-2 w-0.5 bg-gray-300" />
-            <span className="text-xs text-gray-500 mt-1">{value}</span>
+            <div className="h-2 w-0.5 bg-blue-200" />
+            <span className="text-xs text-blue-600 mt-1">{value}</span>
           </div>
         ))}
       </div>
