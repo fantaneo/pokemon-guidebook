@@ -57,10 +57,18 @@ const statTranslations = {
 };
 
 export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
-  const [cardFace, setCardFace] = useState(0); // 0: 表面, 1: 裏面, 2: フレーバーテキスト
+  const [cardFace, setCardFace] = useState(0);
+  const [animateStats, setAnimateStats] = useState(false);
 
   const handleCardFlip = () => {
-    setCardFace((prevFace) => (prevFace + 1) % 3);
+    setCardFace((prevFace) => {
+      const newFace = (prevFace + 1) % 3;
+      if (newFace === 1) {
+        setAnimateStats(true);
+        setTimeout(() => setAnimateStats(false), 1000); // アニメーション終了後にリセット
+      }
+      return newFace;
+    });
   };
 
   const getTypeColor = (type) => {
@@ -70,6 +78,11 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
   const maxStat = useMemo(() => {
     return Math.max(...pokemon.stats.map((stat) => stat.value));
   }, [pokemon.stats]);
+
+  // 能力値のパーセンテージを計算する関数
+  const calculateStatPercentage = (value) => {
+    return (Math.min(value, 150) / 150) * 100;
+  };
 
   const FavoriteButton = () => (
     <button
@@ -137,59 +150,86 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
         </div>
       </div>
 
-      {/* 裏面 */}
+      {/* 裏面 (能力値) */}
       <div
         className={`absolute w-full h-full ${cardFace === 1 ? "" : "hidden"}`}
       >
         <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-gray-100 to-gray-300 rounded-xl">
-          <h2 className="text-xl font-bold mb-2">
-            {pokemon.japaneseName || pokemon.name}
-          </h2>
-          <p className="text-sm text-gray-600 mb-4">{pokemon.category}</p>
+          <div className="flex items-center mb-4">
+            <h2 className="text-xl font-bold mr-4">
+              {pokemon.japaneseName || pokemon.name}
+            </h2>
+            <img
+              src={pokemon.sprites.front_default}
+              alt={pokemon.name}
+              className="w-16 h-16 object-contain"
+            />
+          </div>
           <ul className="w-full">
-            {pokemon.stats.map((stat) => (
+            {pokemon.stats.map((stat, index) => (
               <li
                 key={stat.name}
-                className="flex justify-between items-center mb-2"
+                className="flex justify-between items-center mb-3"
               >
-                <span className="text-sm w-20">
+                <span className="text-base font-medium w-24">
                   {statTranslations[stat.name] || stat.name}:
                 </span>
                 <span
-                  className={`text-lg font-bold w-12 text-right mr-2 ${
+                  className={`text-2xl font-bold w-16 text-right mr-2 ${
                     stat.value === maxStat ? "text-indigo-700" : ""
-                  }`}
+                  } ${animateStats ? "animate-stat-pop" : ""}`}
+                  style={{ animationDelay: `${index * 100}ms` }}
                 >
                   {stat.value}
                 </span>
-                <div className="w-1/2 bg-gray-200 rounded-full h-2.5">
+                <div className="w-1/2 bg-gray-200 rounded-full h-3">
                   <div
-                    className={`h-2.5 rounded-full ${
+                    className={`h-3 rounded-full ${
                       stat.value === maxStat ? "bg-indigo-600" : "bg-teal-500"
-                    }`}
-                    style={{ width: `${(stat.value / 255) * 100}%` }}
+                    } ${animateStats ? "animate-stat-bar" : ""}`}
+                    style={{
+                      width: animateStats
+                        ? 0
+                        : `${calculateStatPercentage(stat.value)}%`,
+                      animationDelay: `${index * 100}ms`,
+                      "--stat-width": `${calculateStatPercentage(stat.value)}%`,
+                    }}
                   ></div>
                 </div>
               </li>
             ))}
           </ul>
-          <div className="mt-4">
-            <p className="text-sm">身長: {pokemon.height / 10}m</p>
-            <p className="text-sm">体重: {pokemon.weight / 10}kg</p>
-          </div>
           <FavoriteButton />
         </div>
       </div>
 
-      {/* フレーバーテキスト */}
+      {/* フレーバーテキストと追加情報 */}
       <div
         className={`absolute w-full h-full ${cardFace === 2 ? "" : "hidden"}`}
       >
         <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-gray-100 to-gray-300 rounded-xl">
-          <h2 className="text-xl font-bold mb-4">
-            {pokemon.japaneseName || pokemon.name}
-          </h2>
-          <p className="text-sm text-gray-800 mb-4">{pokemon.description}</p>
+          <div className="flex items-center mb-4">
+            <div className="flex flex-col items-start mr-4">
+              <h2 className="text-xl font-bold">
+                {pokemon.japaneseName || pokemon.name}
+              </h2>
+              {pokemon.category && (
+                <p className="text-sm text-gray-600">{pokemon.category}</p>
+              )}
+            </div>
+            <img
+              src={pokemon.sprites.front_default}
+              alt={pokemon.name}
+              className="w-16 h-16 object-contain"
+            />
+          </div>
+          <p className="text-sm text-gray-800 mb-4 overflow-y-auto max-h-36">
+            {pokemon.description}
+          </p>
+          <div className="mt-2 text-center">
+            <p className="text-base">身長: {pokemon.height / 10}m</p>
+            <p className="text-base">体重: {pokemon.weight / 10}kg</p>
+          </div>
           <FavoriteButton />
         </div>
       </div>
