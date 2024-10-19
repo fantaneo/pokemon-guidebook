@@ -1,5 +1,8 @@
-// eslint-disable-next-line react/prop-types
-export default function SearchBar({ filterText, setFilterText }) {
+import { useSearchContext } from "../contexts/SearchContext";
+
+export default function SearchBar() {
+  const { filterText, setFilterText } = useSearchContext();
+
   return (
     <input
       type="text"

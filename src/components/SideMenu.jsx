@@ -3,8 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 import { POKEMON_TYPES } from "../constants/pokemonTypes";
 import { MdArrowForwardIos } from "react-icons/md";
 import { useTypeContext } from "../hooks/useTypeContext";
+import SearchBar from "./SearchBar";
 
-// eslint-disable-next-line react/prop-types
 export default function SideMenu() {
   const location = useLocation();
   const { selectedTypes, handleTypeSelect } = useTypeContext();
@@ -34,6 +34,8 @@ export default function SideMenu() {
           </Link>
         ))}
       </nav>
+      <h2 className="mt-6 mb-4 text-lg font-semibold">検索</h2>
+      <SearchBar />
       <h2 className="mt-6 mb-4 text-lg font-semibold">タイプ</h2>
       <div className="flex flex-wrap gap-2">
         {POKEMON_TYPES.map((type) => (

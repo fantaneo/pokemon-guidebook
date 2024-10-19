@@ -1,15 +1,15 @@
 import { useState, useMemo } from "react";
 import Header from "./Header";
 import SideMenu from "./SideMenu";
-import SearchBar from "./SearchBar";
 import PokemonList from "./PokemonList";
 import { usePokemonData } from "../hooks/usePokemonData";
 import { useTypeFiltering } from "../hooks/useTypeFiltering";
 import { useTypeContext } from "../hooks/useTypeContext";
+import { useSearchContext } from "../contexts/SearchContext";
 import PokemonTitle from "./PokemonTitle";
 
 export default function PokemonCards() {
-  const [filterText, setFilterText] = useState("");
+  const { filterText } = useSearchContext();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
     usePokemonData();
   const { selectedTypes } = useTypeContext();
@@ -38,7 +38,6 @@ export default function PokemonCards() {
         </aside>
         <main className="flex-1 p-6">
           <div className="p-5">
-            <SearchBar filterText={filterText} setFilterText={setFilterText} />
             <PokemonList
               data={data}
               filterText={filterText}
