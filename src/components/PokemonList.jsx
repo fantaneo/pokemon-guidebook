@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useRef, useCallback, useEffect } from "react";
+import { useRef, useCallback, useEffect, useMemo } from "react";
 import PokemonCard from "./PokemonCard";
 import { useContext } from "react";
 import { FavoritesContext } from "./FavoritesContext.jsx";
@@ -38,30 +38,32 @@ export default function PokemonList({
     [fetchNextPage, hasNextPage]
   );
 
-  const filteredPokemons = data?.pages
-    ? data.pages.flatMap((page) =>
-        page.results.filter((pokemon) => {
-          const nameMatch =
-            pokemon.japaneseName
-              ?.toLowerCase()
-              .includes(filterText.toLowerCase()) ||
-            pokemon.name.toLowerCase().includes(filterText.toLowerCase());
+  const filteredPokemons = useMemo(() => {
+    return data?.pages
+      ? data.pages.flatMap((page) =>
+          page.results.filter((pokemon) => {
+            const nameMatch =
+              pokemon.japaneseName
+                ?.toLowerCase()
+                .includes(filterText.toLowerCase()) ||
+              pokemon.name.toLowerCase().includes(filterText.toLowerCase());
 
-          const typeMatch =
-            selectedTypes.length === 0 ||
-            (Array.isArray(pokemon.types) &&
-              pokemon.types.some((pokemonType) =>
-                selectedTypes.some(
-                  (selectedType) =>
-                    POKEMON_TYPE_MAPPING[selectedType].toLowerCase() ===
-                    pokemonType.toLowerCase()
-                )
-              ));
+            const typeMatch =
+              selectedTypes.length === 0 ||
+              (Array.isArray(pokemon.types) &&
+                pokemon.types.some((pokemonType) =>
+                  selectedTypes.some(
+                    (selectedType) =>
+                      POKEMON_TYPE_MAPPING[selectedType].toLowerCase() ===
+                      pokemonType.toLowerCase()
+                  )
+                ));
 
-          return nameMatch && typeMatch;
-        })
-      )
-    : [];
+            return nameMatch && typeMatch;
+          })
+        )
+      : [];
+  }, [data, filterText, selectedTypes]);
 
   useEffect(() => {
     if (filteredPokemons.length < 20 && hasNextPage) {
