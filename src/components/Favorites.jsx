@@ -1,12 +1,11 @@
 import { useContext, useState, useCallback, useEffect, useMemo } from "react";
 import { FavoritesContext } from "./FavoritesContext.jsx";
-import Header from "./Header";
-import SideMenu from "./SideMenu";
 import PokemonCard from "./PokemonCard";
 import { isFavorite } from "./FavoriteReducer";
 import { useTypeFiltering } from "../hooks/useTypeFiltering";
 import { useTypeContext } from "../hooks/useTypeContext";
 import { useSearchContext } from "../contexts/SearchContext";
+import Layout from "./Layout";
 
 export default function Favorites() {
   const { favorites, dispatch } = useContext(FavoritesContext);
@@ -37,30 +36,22 @@ export default function Favorites() {
   );
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <Header />
-      <div className="flex flex-1">
-        <aside className="hidden w-64 border-r lg:block">
-          <SideMenu />
-        </aside>
-        <main className="flex-1 p-6">
-          <div className="p-5">
-            <h2 className="text-2xl font-bold mb-4">お気に入りリスト</h2>
-            <div className="grid grid-cols-3 gap-4">
-              {finalFilteredPokemons.map((pokemon, index) => (
-                <PokemonCard
-                  key={`${pokemon.name}-${index}`}
-                  pokemon={pokemon}
-                  isFavorite={checkIsFavorite(pokemon)}
-                  toggleFavorite={() => {
-                    dispatch({ type: "TOGGLE_FAVORITE", payload: pokemon });
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-        </main>
+    <Layout>
+      <div className="p-5">
+        <h2 className="text-2xl font-bold mb-4">お気に入りリスト</h2>
+        <div className="grid grid-cols-3 gap-4">
+          {finalFilteredPokemons.map((pokemon, index) => (
+            <PokemonCard
+              key={`${pokemon.name}-${index}`}
+              pokemon={pokemon}
+              isFavorite={checkIsFavorite(pokemon)}
+              toggleFavorite={() => {
+                dispatch({ type: "TOGGLE_FAVORITE", payload: pokemon });
+              }}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 }
