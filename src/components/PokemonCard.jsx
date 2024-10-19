@@ -127,8 +127,8 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
   };
 
   const cardBackground = useMemo(() => {
-    const primaryType = pokemon.types[0].toLowerCase();
-    return getTypeGradient(primaryType);
+    const types = pokemon.types.map((type) => type.toLowerCase());
+    return getTypeGradient(types);
   }, [pokemon.types]);
 
   return (

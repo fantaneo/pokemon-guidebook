@@ -32,6 +32,23 @@ const typeGradients = {
     "linear-gradient(135deg, rgba(238, 153, 172, 0.3) 0%, rgba(244, 189, 201, 0.3) 100%)",
 };
 
-export function getTypeGradient(type) {
-  return typeGradients[type] || typeGradients.normal;
+export function getTypeGradient(types) {
+  if (types.length === 1) {
+    return typeGradients[types[0]] || typeGradients.normal;
+  } else if (types.length === 2) {
+    const gradient1 = typeGradients[types[0]] || typeGradients.normal;
+    const gradient2 = typeGradients[types[1]] || typeGradients.normal;
+    return `linear-gradient(135deg, ${extractColor(
+      gradient1
+    )} 0%, ${extractColor(gradient1)} 50%, ${extractColor(
+      gradient2
+    )} 50%, ${extractColor(gradient2)} 100%)`;
+  } else {
+    return typeGradients.normal;
+  }
+}
+
+function extractColor(gradient) {
+  const match = gradient.match(/rgba\([^)]+\)/);
+  return match ? match[0] : "rgba(168, 168, 120, 0.3)";
 }
