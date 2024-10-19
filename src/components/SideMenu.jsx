@@ -5,7 +5,7 @@ import { MdArrowForwardIos } from "react-icons/md";
 import { useTypeContext } from "../contexts/TypeContext";
 
 // eslint-disable-next-line react/prop-types
-export default function SideMenu({ selectedTypes, onTypeSelect }) {
+export default function SideMenu() {
   const location = useLocation();
   const { selectedTypes: contextSelectedTypes, handleTypeSelect } =
     useTypeContext();

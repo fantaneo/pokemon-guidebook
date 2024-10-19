@@ -1,7 +1,8 @@
-import React, { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext } from "react";
 
 const TypeContext = createContext();
 
+// eslint-disable-next-line react/prop-types
 export function TypeProvider({ children }) {
   const [selectedTypes, setSelectedTypes] = useState([]);
 
