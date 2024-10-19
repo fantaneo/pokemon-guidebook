@@ -5,8 +5,19 @@ import { POKEMON_TYPE_MAPPING } from "../constants/pokemonTypeMapping";
 PokemonCard.propTypes = {
   pokemon: PropTypes.shape({
     name: PropTypes.string.isRequired,
-    url: PropTypes.string.isRequired,
-    types: PropTypes.arrayOf(PropTypes.string),
+    types: PropTypes.arrayOf(PropTypes.string).isRequired,
+    sprites: PropTypes.shape({
+      front_default: PropTypes.string.isRequired,
+    }).isRequired,
+    japaneseName: PropTypes.string,
+    height: PropTypes.number.isRequired,
+    weight: PropTypes.number.isRequired,
+    stats: PropTypes.arrayOf(
+      PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        value: PropTypes.number.isRequired,
+      })
+    ).isRequired,
   }).isRequired,
   toggleFavorite: PropTypes.func.isRequired,
   isFavorite: PropTypes.bool.isRequired,

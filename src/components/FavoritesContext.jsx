@@ -8,11 +8,11 @@ export const FavoritesProvider = ({ children }) => {
   const [favorites, dispatch] = useReducer(favoritesReducer, initialState);
 
   useEffect(() => {
-    const _favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-    _favorites.forEach((pokemon) =>
+    const storedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
+    storedFavorites.forEach((pokemon) =>
       dispatch({ type: "ADD_FAVORITE", payload: pokemon })
     );
-  }, [dispatch]);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("favorites", JSON.stringify(favorites));

@@ -18,6 +18,7 @@ const fetchAllPokemons = async () => {
       return {
         id: detailData.id,
         name: detailData.name,
+        url: pokemon.url, // この行を追加
         types: detailData.types.map((type) => type.type.name),
         japaneseName: await fetchJapaneseName(detailData.species.url),
         stats: detailData.stats.map((stat) => ({

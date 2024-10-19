@@ -13,26 +13,9 @@ export default function Favorites() {
   const { selectedTypes } = useTypeContext();
 
   useEffect(() => {
-    const fetchFavoritePokemons = async () => {
-      const favoritePokemons = await Promise.all(
-        favorites.map(async (favorite) => {
-          const response = await fetch(
-            `https://pokeapi.co/api/v2/pokemon/${favorite.name}`
-          );
-          const data = await response.json();
-          return {
-            name: data.species.name,
-            url: data.species.url,
-            types: data.types.map((type) => type.type.name),
-            japaneseName: favorite.japaneseName,
-          };
-        })
-      );
-      setPokemons(favoritePokemons);
-    };
-
-    fetchFavoritePokemons();
-  }, [favorites]);
+    const storedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
+    setPokemons(storedFavorites);
+  }, []);
 
   const { filteredPokemons } = useTypeFiltering(pokemons, selectedTypes);
 
