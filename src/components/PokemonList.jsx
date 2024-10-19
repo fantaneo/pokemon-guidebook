@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useRef, useCallback, useEffect } from "react";
+import { useRef, useCallback, useEffect, useMemo } from "react";
 import PokemonCard from "./PokemonCard";
 import { useContext } from "react";
 import { FavoritesContext } from "./FavoritesContext.jsx";
@@ -37,21 +37,11 @@ export default function PokemonList({
     [fetchNextPage, hasNextPage]
   );
 
-  const pokemonsToDisplay =
-    filteredPokemons.length > 0
-      ? filteredPokemons
-      : data?.pages?.flatMap((page) => page.results) || [];
-
-  // filterTextによるフィルタリングを適用
-  const finalFilteredPokemons = pokemonsToDisplay.filter((pokemon) =>
-    pokemon.name.toLowerCase().includes(filterText.toLowerCase())
-  );
-
   useEffect(() => {
-    if (finalFilteredPokemons.length < 20 && hasNextPage) {
+    if (filteredPokemons.length < 20 && hasNextPage) {
       fetchNextPage();
     }
-  }, [finalFilteredPokemons, hasNextPage, fetchNextPage]);
+  }, [filteredPokemons, hasNextPage, fetchNextPage]);
 
   if (status === "loading") {
     return <p>ポケモンデータを読み込んでいます...</p>;
@@ -64,11 +54,11 @@ export default function PokemonList({
   return (
     <>
       <div className="grid grid-cols-3 gap-4">
-        {finalFilteredPokemons.map((pokemon, index) => (
+        {filteredPokemons.map((pokemon, index) => (
           <div
-            key={pokemon.name}
+            key={`${pokemon.name}-${index}`}
             ref={
-              index === finalFilteredPokemons.length - 1
+              index === filteredPokemons.length - 1
                 ? lastPokemonElementRef
                 : null
             }
@@ -87,12 +77,10 @@ export default function PokemonList({
         ))}
       </div>
       {isFetchingNextPage && <p>ポケモンをさらに読み込んでいます...</p>}
-      {!hasNextPage && finalFilteredPokemons.length > 0 && (
+      {!hasNextPage && filteredPokemons.length > 0 && (
         <p>すべてのポケモンを読み込みました</p>
       )}
-      {finalFilteredPokemons.length === 0 && (
-        <p>該当するポケモンが見つかりません</p>
-      )}
+      {filteredPokemons.length === 0 && <p>該当するポケモンが見つかりません</p>}
     </>
   );
 }

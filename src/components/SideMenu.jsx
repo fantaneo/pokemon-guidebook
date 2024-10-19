@@ -7,8 +7,7 @@ import { useTypeContext } from "../hooks/useTypeContext";
 // eslint-disable-next-line react/prop-types
 export default function SideMenu() {
   const location = useLocation();
-  const { selectedTypes: contextSelectedTypes, handleTypeSelect } =
-    useTypeContext();
+  const { selectedTypes, handleTypeSelect } = useTypeContext();
   const menuItems = [
     { name: "ポケモン", href: "/pokemons" },
     { name: "お気に入り", href: "/favorites" },
@@ -42,7 +41,7 @@ export default function SideMenu() {
             key={type}
             onClick={() => handleTypeSelect(type)}
             className={`px-2 py-1 text-sm rounded ${
-              contextSelectedTypes.includes(type)
+              selectedTypes.includes(type)
                 ? "bg-primary text-primary-foreground"
                 : "bg-secondary text-secondary-foreground"
             }`}

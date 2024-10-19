@@ -13,20 +13,25 @@ export default function Favorites() {
   const { selectedTypes } = useTypeContext();
 
   useEffect(() => {
-    const favoritePokemons = favorites.map((favorite) => {
-      return fetch(`https://pokeapi.co/api/v2/pokemon/${favorite.name}`).then(
-        (res) => res.json()
+    const fetchFavoritePokemons = async () => {
+      const favoritePokemons = await Promise.all(
+        favorites.map(async (favorite) => {
+          const response = await fetch(
+            `https://pokeapi.co/api/v2/pokemon/${favorite.name}`
+          );
+          const data = await response.json();
+          return {
+            name: data.species.name,
+            url: data.species.url,
+            types: data.types.map((type) => type.type.name),
+            japaneseName: favorite.japaneseName,
+          };
+        })
       );
-    });
-    Promise.all(favoritePokemons).then((fpokemons) => {
-      setPokemons(
-        fpokemons.map((p) => ({
-          name: p.species.name,
-          url: p.species.url,
-          types: p.types.map((type) => type.type.name),
-        }))
-      );
-    });
+      setPokemons(favoritePokemons);
+    };
+
+    fetchFavoritePokemons();
   }, [favorites]);
 
   const { filteredPokemons } = useTypeFiltering(pokemons, selectedTypes);
@@ -51,7 +56,7 @@ export default function Favorites() {
             <div className="grid grid-cols-3 gap-4">
               {filteredPokemons.map((pokemon, index) => (
                 <PokemonCard
-                  key={index}
+                  key={`${pokemon.name}-${index}`}
                   pokemon={pokemon}
                   isFavorite={checkIsFavorite(pokemon)}
                   toggleFavorite={() => {

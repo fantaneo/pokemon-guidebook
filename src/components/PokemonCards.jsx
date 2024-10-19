@@ -19,6 +19,14 @@ export default function PokemonCards() {
 
   const { filteredPokemons } = useTypeFiltering(allPokemons, selectedTypes);
 
+  const finalFilteredPokemons = useMemo(() => {
+    return filteredPokemons.filter(
+      (pokemon) =>
+        pokemon.name.toLowerCase().includes(filterText.toLowerCase()) ||
+        (pokemon.japaneseName && pokemon.japaneseName.includes(filterText))
+    );
+  }, [filteredPokemons, filterText]);
+
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
@@ -32,12 +40,11 @@ export default function PokemonCards() {
             <PokemonList
               data={data}
               filterText={filterText}
-              selectedTypes={selectedTypes}
               fetchNextPage={fetchNextPage}
               hasNextPage={hasNextPage}
               isFetchingNextPage={isFetchingNextPage}
               status={status}
-              filteredPokemons={filteredPokemons}
+              filteredPokemons={finalFilteredPokemons}
             />
           </div>
         </main>
