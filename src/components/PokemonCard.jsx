@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { POKEMON_TYPE_MAPPING } from "../constants/pokemonTypeMapping";
 import { POKEMON_ABILITIES } from "../constants/pokemonAbilities";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { getTypeGradient } from "../utils/typeGradients";
 
 PokemonCard.propTypes = {
   pokemon: PropTypes.shape({
@@ -79,7 +80,7 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
   };
 
   const getTypeColor = (type) => {
-    return POKEMON_TYPE_MAPPING[type.toLowerCase()] || "#A8A878"; // ��ォルトは通常タイプの色
+    return POKEMON_TYPE_MAPPING[type.toLowerCase()] || "#A8A878"; // ォルトは通常タイプの色
   };
 
   const maxStat = useMemo(() => {
@@ -125,6 +126,11 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
     return POKEMON_ABILITIES[abilityName.toLowerCase()] || abilityName;
   };
 
+  const cardBackground = useMemo(() => {
+    const primaryType = pokemon.types[0].toLowerCase();
+    return getTypeGradient(primaryType);
+  }, [pokemon.types]);
+
   return (
     <div
       className="relative w-64 h-96 rounded-xl shadow-lg transition-transform duration-300 transform cursor-pointer"
@@ -134,7 +140,10 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
       <div
         className={`absolute w-full h-full ${cardFace === 0 ? "" : "hidden"}`}
       >
-        <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-gray-100 to-gray-300 rounded-xl">
+        <div
+          className="w-full h-full flex flex-col items-center justify-center p-4 rounded-xl"
+          style={{ background: cardBackground }}
+        >
           <img
             src={pokemon.sprites.front_default}
             alt={pokemon.name}
@@ -166,7 +175,10 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
       <div
         className={`absolute w-full h-full ${cardFace === 1 ? "" : "hidden"}`}
       >
-        <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-gray-100 to-gray-300 rounded-xl">
+        <div
+          className="w-full h-full flex flex-col items-center justify-center p-4 rounded-xl"
+          style={{ background: cardBackground }}
+        >
           <div className="flex items-center mb-2">
             <div className="flex flex-col items-start mr-4">
               <h2 className="text-xl font-bold">
@@ -235,7 +247,10 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
       <div
         className={`absolute w-full h-full ${cardFace === 2 ? "" : "hidden"}`}
       >
-        <div className="w-full h-full flex flex-col p-4 bg-gradient-to-br from-gray-100 to-gray-300 rounded-xl">
+        <div
+          className="w-full h-full flex flex-col p-4 rounded-xl"
+          style={{ background: cardBackground }}
+        >
           <div className="flex items-center mb-2">
             <div className="flex flex-col items-start mr-4">
               <h2 className="text-xl font-bold">
