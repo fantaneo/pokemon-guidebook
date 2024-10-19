@@ -1,15 +1,15 @@
-import { useContext } from "react";
+import { useContext, useState, useCallback } from "react";
 import { FavoritesContext } from "./FavoritesContext.jsx";
 import { useEffect } from "react";
 import Header from "./Header";
 import SideMenu from "./SideMenu";
 import PokemonCard from "./PokemonCard";
-import { useState } from "react";
 import { isFavorite } from "./FavoriteReducer";
 
 export default function Favorites() {
   const { favorites, dispatch } = useContext(FavoritesContext);
   const [pokemons, setPokemons] = useState([]);
+  const [selectedTypes, setSelectedTypes] = useState([]);
 
   useEffect(() => {
     const favoritePokemons = favorites.map((favorite) => {
@@ -29,12 +29,30 @@ export default function Favorites() {
     });
   }, [favorites]);
 
+  const handleTypeSelect = (type) => {
+    setSelectedTypes((prevTypes) =>
+      prevTypes.includes(type)
+        ? prevTypes.filter((t) => t !== type)
+        : [...prevTypes, type]
+    );
+  };
+
+  const checkIsFavorite = useCallback(
+    (pokemon) => {
+      return isFavorite(favorites, pokemon);
+    },
+    [favorites]
+  );
+
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
       <div className="flex flex-1">
         <aside className="hidden w-64 border-r lg:block">
-          <SideMenu />
+          <SideMenu
+            selectedTypes={selectedTypes}
+            onTypeSelect={handleTypeSelect}
+          />
         </aside>
         <main className="flex-1 p-6">
           <div className="p-5">
@@ -44,7 +62,7 @@ export default function Favorites() {
                 <PokemonCard
                   key={index}
                   pokemon={pokemon}
-                  isFavorite={() => isFavorite(favorites, pokemon)}
+                  isFavorite={checkIsFavorite(pokemon)}
                   toggleFavorite={() => {
                     dispatch({ type: "TOGGLE_FAVORITE", payload: pokemon });
                   }}

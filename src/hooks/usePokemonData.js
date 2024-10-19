@@ -6,13 +6,24 @@ const fetchPokemons = async ({ pageParam = 0 }) => {
     `https://pokeapi.co/api/v2/pokemon?limit=10&offset=${pageParam}`
   );
   const data = await response.json();
-  return { ...data, nextOffset: pageParam + 10 };
+  const detailedData = await Promise.all(
+    data.results.map(async (pokemon) => {
+      const detailResponse = await fetch(pokemon.url);
+      const detailData = await detailResponse.json();
+      return {
+        ...pokemon,
+        types: detailData.types.map((type) => type.type.name),
+        japaneseName: await fetchJapaneseName(detailData.species.url),
+      };
+    })
+  );
+  return { ...data, results: detailedData, nextOffset: pageParam + 10 };
 };
 
 const fetchJapaneseName = async (url) => {
   const response = await fetch(url);
   const data = await response.json();
-  return data.names.find((name) => name.language.name === "ja").name;
+  return data.names.find((name) => name.language.name === "ja")?.name || "";
 };
 
 export function usePokemonData() {
@@ -26,16 +37,6 @@ export function usePokemonData() {
     const storedNameMap = localStorage.getItem("pokemonNameMap");
     if (storedNameMap) {
       setNameMap(JSON.parse(storedNameMap));
-    } else {
-      fetchPokemons().then(async (pokemonList) => {
-        const newNameMap = {};
-        for (const pokemon of pokemonList) {
-          const japaneseName = await fetchJapaneseName(pokemon.url);
-          newNameMap[pokemon.name] = japaneseName;
-        }
-        setNameMap(newNameMap);
-        localStorage.setItem("pokemonNameMap", JSON.stringify(newNameMap));
-      });
     }
   }, []);
 
@@ -46,7 +47,7 @@ export function usePokemonData() {
       ...page,
       results: page.results.map((pokemon) => ({
         ...pokemon,
-        japaneseName: nameMap[pokemon.name],
+        japaneseName: nameMap[pokemon.name] || pokemon.japaneseName,
       })),
     })),
   };

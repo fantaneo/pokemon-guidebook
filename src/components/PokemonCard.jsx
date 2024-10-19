@@ -5,9 +5,10 @@ PokemonCard.propTypes = {
   pokemon: PropTypes.shape({
     name: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired,
+    types: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
   toggleFavorite: PropTypes.func.isRequired,
-  isFavorite: PropTypes.func.isRequired,
+  isFavorite: PropTypes.bool.isRequired,
 };
 
 export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
@@ -45,6 +46,7 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
             name: jpName.name,
             image: pokemonImageUrl(pokemon.url),
             stats: pokemonData.stats,
+            types: pokemonData.types.map((type) => type.type.name),
           });
         })
         .catch((error) =>
@@ -65,28 +67,43 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
   }
 
   return (
-    <div
-      key={pokemonDetail.id}
-      className="bg-gray-200 rounded-lg shadow-md p-4"
-    >
-      <button onClick={() => toggleFavorite()}>
-        {isFavorite() ? "♥" : "♡"}
-      </button>
-
-      <h1 className="text-lg font-bold">{pokemonDetail.name}</h1>
-      <img
-        src={pokemonDetail.image}
-        alt={pokemonDetail.name}
-        className="w-20 h-20"
-      />
-      <ul>
-        {pokemonDetail.stats.map((stat) => (
-          <li key={stat.stat.name} className="text-left">
-            {stat.stat.name}:{" "}
-            <span className="text-xl font-bold">{stat.base_stat}</span>
-          </li>
-        ))}
-      </ul>
+    <div className="border p-4 rounded-lg shadow-md">
+      {pokemonDetail && (
+        <>
+          <img
+            src={pokemonDetail.image}
+            alt={pokemonDetail.name}
+            className="w-32 h-32 mx-auto"
+          />
+          <h2 className="text-xl font-bold mt-2">{pokemonDetail.name}</h2>
+          <div className="mt-2">
+            {pokemonDetail.types &&
+              pokemonDetail.types.map((type, index) => (
+                <span
+                  key={index}
+                  className="mr-2 px-2 py-1 bg-gray-200 rounded-full text-sm"
+                >
+                  {type}
+                </span>
+              ))}
+          </div>
+          <div className="mt-2">
+            {pokemonDetail.stats.map((stat, index) => (
+              <div key={index} className="text-sm">
+                {stat.stat.name}: {stat.base_stat}
+              </div>
+            ))}
+          </div>
+          <button
+            onClick={toggleFavorite}
+            className={`mt-2 px-4 py-2 rounded ${
+              isFavorite ? "bg-red-500 text-white" : "bg-gray-200"
+            }`}
+          >
+            {isFavorite ? "お気に入りから削除" : "お気に入りに追加"}
+          </button>
+        </>
+      )}
     </div>
   );
 }

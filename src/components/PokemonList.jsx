@@ -8,6 +8,7 @@ import { isFavorite } from "./FavoriteReducer";
 export default function PokemonList({
   data,
   filterText,
+  selectedTypes,
   fetchNextPage,
   hasNextPage,
   isFetchingNextPage,
@@ -29,12 +30,21 @@ export default function PokemonList({
     [fetchNextPage, hasNextPage]
   );
 
+  const checkIsFavorite = useCallback(
+    (pokemon) => {
+      return isFavorite(favorites, pokemon);
+    },
+    [favorites]
+  );
+
   const filteredPokemons = data?.pages
     ? data.pages.flatMap((page) =>
         page.results.filter(
           (pokemon) =>
-            pokemon.japaneseName?.includes(filterText) ||
-            pokemon.name.includes(filterText)
+            (pokemon.japaneseName?.includes(filterText) ||
+              pokemon.name.includes(filterText)) &&
+            (selectedTypes.length === 0 ||
+              selectedTypes.every((type) => pokemon.types?.includes(type)))
         )
       )
     : [];
@@ -61,8 +71,7 @@ export default function PokemonList({
           >
             <PokemonCard
               pokemon={pokemon}
-              japaneseName={pokemon.japaneseName}
-              isFavorite={() => isFavorite(favorites, pokemon)}
+              isFavorite={checkIsFavorite(pokemon)}
               toggleFavorite={() => {
                 dispatch({
                   type: "TOGGLE_FAVORITE",

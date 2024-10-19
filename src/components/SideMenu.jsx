@@ -1,7 +1,9 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Link } from "react-router-dom";
+import { POKEMON_TYPES } from "../constants/pokemonTypes";
 
-export default function SideMenu() {
+// eslint-disable-next-line react/prop-types
+export default function SideMenu({ selectedTypes, onTypeSelect }) {
   const menuItems = [
     { name: "ポケモン", href: "/pokemons" },
     { name: "お気に入り", href: "/favorites" },
@@ -21,6 +23,23 @@ export default function SideMenu() {
           </Link>
         ))}
       </nav>
+      <h2 className="mt-6 mb-4 text-lg font-semibold">タイプ</h2>
+      <div className="flex flex-wrap gap-2">
+        {POKEMON_TYPES.map((type) => (
+          <button
+            key={type}
+            onClick={() => onTypeSelect(type)}
+            className={`px-2 py-1 text-sm rounded ${
+              // eslint-disable-next-line react/prop-types
+              selectedTypes.includes(type)
+                ? "bg-primary text-primary-foreground"
+                : "bg-secondary text-secondary-foreground"
+            }`}
+          >
+            {type}
+          </button>
+        ))}
+      </div>
     </ScrollArea>
   );
 }
