@@ -8,13 +8,22 @@ const fetchPokemons = async ({ pageParam = 0 }) => {
   const data = await response.json();
   const detailedData = await Promise.all(
     data.results.map(async (pokemon) => {
-      const detailResponse = await fetch(pokemon.url);
-      const detailData = await detailResponse.json();
-      return {
-        ...pokemon,
-        types: detailData.types.map((type) => type.type.name),
-        japaneseName: await fetchJapaneseName(detailData.species.url),
-      };
+      try {
+        const detailResponse = await fetch(pokemon.url);
+        const detailData = await detailResponse.json();
+        return {
+          ...pokemon,
+          types: detailData.types.map((type) => type.type.name),
+          japaneseName: await fetchJapaneseName(detailData.species.url),
+        };
+      } catch (error) {
+        console.error(`Error fetching details for ${pokemon.name}:`, error);
+        return {
+          ...pokemon,
+          types: [],
+          japaneseName: "",
+        };
+      }
     })
   );
   return { ...data, results: detailedData, nextOffset: pageParam + 10 };

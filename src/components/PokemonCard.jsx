@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import { POKEMON_TYPE_MAPPING } from "../constants/pokemonTypeMapping";
 
 PokemonCard.propTypes = {
   pokemon: PropTypes.shape({
@@ -32,6 +33,14 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
       console.error("Error fetching species name:", error);
       return { name: "名前なし" };
     }
+  };
+
+  const getJapaneseTypeName = (englishType) => {
+    return (
+      Object.keys(POKEMON_TYPE_MAPPING).find(
+        (key) => POKEMON_TYPE_MAPPING[key] === englishType
+      ) || englishType
+    );
   };
 
   useEffect(() => {
@@ -83,7 +92,7 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
                   key={index}
                   className="mr-2 px-2 py-1 bg-gray-200 rounded-full text-sm"
                 >
-                  {type}
+                  {getJapaneseTypeName(type)}
                 </span>
               ))}
           </div>

@@ -1,9 +1,10 @@
 /* eslint-disable react/prop-types */
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useEffect } from "react";
 import PokemonCard from "./PokemonCard";
 import { useContext } from "react";
 import { FavoritesContext } from "./FavoritesContext.jsx";
 import { isFavorite } from "./FavoriteReducer";
+import { POKEMON_TYPE_MAPPING } from "../constants/pokemonTypeMapping";
 
 export default function PokemonList({
   data,
@@ -16,6 +17,13 @@ export default function PokemonList({
 }) {
   const { favorites, dispatch } = useContext(FavoritesContext);
   const observer = useRef();
+
+  const checkIsFavorite = useCallback(
+    (pokemon) => {
+      return isFavorite(favorites, pokemon);
+    },
+    [favorites]
+  );
 
   const lastPokemonElementRef = useCallback(
     (node) => {
@@ -30,22 +38,28 @@ export default function PokemonList({
     [fetchNextPage, hasNextPage]
   );
 
-  const checkIsFavorite = useCallback(
-    (pokemon) => {
-      return isFavorite(favorites, pokemon);
-    },
-    [favorites]
-  );
-
   const filteredPokemons = data?.pages
     ? data.pages.flatMap((page) =>
-        page.results.filter(
-          (pokemon) =>
-            (pokemon.japaneseName?.includes(filterText) ||
-              pokemon.name.includes(filterText)) &&
-            (selectedTypes.length === 0 ||
-              selectedTypes.every((type) => pokemon.types?.includes(type)))
-        )
+        page.results.filter((pokemon) => {
+          const nameMatch =
+            pokemon.japaneseName
+              ?.toLowerCase()
+              .includes(filterText.toLowerCase()) ||
+            pokemon.name.toLowerCase().includes(filterText.toLowerCase());
+
+          const typeMatch =
+            selectedTypes.length === 0 ||
+            (Array.isArray(pokemon.types) &&
+              selectedTypes.every((selectedType) =>
+                pokemon.types.some(
+                  (pokemonType) =>
+                    pokemonType.toLowerCase() ===
+                    POKEMON_TYPE_MAPPING[selectedType].toLowerCase()
+                )
+              ));
+
+          return nameMatch && typeMatch;
+        })
       )
     : [];
 
