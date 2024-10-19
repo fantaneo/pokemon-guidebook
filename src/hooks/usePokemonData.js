@@ -48,7 +48,10 @@ const fetchAllPokemons = async () => {
         })),
         height: detailData.height,
         weight: detailData.weight,
-        abilities: detailData.abilities.map((ability) => ability.ability.name),
+        abilities: detailData.abilities.map((ability) => ({
+          name: ability.ability.name,
+          is_hidden: ability.is_hidden,
+        })),
         sprites: {
           front_default: detailData.sprites.front_default,
           back_default: detailData.sprites.back_default,

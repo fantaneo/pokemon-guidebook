@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import PropTypes from "prop-types";
 import { POKEMON_TYPE_MAPPING } from "../constants/pokemonTypeMapping";
+import { POKEMON_ABILITIES } from "../constants/pokemonAbilities";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 
 PokemonCard.propTypes = {
@@ -21,6 +22,12 @@ PokemonCard.propTypes = {
     ).isRequired,
     category: PropTypes.string,
     description: PropTypes.string,
+    abilities: PropTypes.arrayOf(
+      PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        is_hidden: PropTypes.bool.isRequired,
+      })
+    ).isRequired,
   }).isRequired,
   toggleFavorite: PropTypes.func.isRequired,
   isFavorite: PropTypes.bool.isRequired,
@@ -72,7 +79,7 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
   };
 
   const getTypeColor = (type) => {
-    return POKEMON_TYPE_MAPPING[type.toLowerCase()] || "#A8A878"; // デフォルトは通常タイプの色
+    return POKEMON_TYPE_MAPPING[type.toLowerCase()] || "#A8A878"; // ��ォルトは通常タイプの色
   };
 
   const maxStat = useMemo(() => {
@@ -113,6 +120,11 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
     </div>
   );
 
+  // 特性の日本語名を取得する関数
+  const getAbilityJapaneseName = (abilityName) => {
+    return POKEMON_ABILITIES[abilityName.toLowerCase()] || abilityName;
+  };
+
   return (
     <div
       className="relative w-64 h-96 rounded-xl shadow-lg transition-transform duration-300 transform cursor-pointer"
@@ -150,41 +162,59 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
         </div>
       </div>
 
-      {/* 裏面 (能力値) */}
+      {/* 裏面 (��力値) */}
       <div
         className={`absolute w-full h-full ${cardFace === 1 ? "" : "hidden"}`}
       >
-        <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-gray-100 to-gray-300 rounded-xl">
-          <div className="flex items-center mb-4">
-            <h2 className="text-xl font-bold mr-4">
-              {pokemon.japaneseName || pokemon.name}
-            </h2>
-            <img
-              src={pokemon.sprites.front_default}
-              alt={pokemon.name}
-              className="w-16 h-16 object-contain"
-            />
+        <div className="w-full h-full flex flex-col items-center justify-between p-4 bg-gradient-to-br from-gray-100 to-gray-300 rounded-xl">
+          <div>
+            <div className="flex items-center mb-2">
+              <div className="flex flex-col items-start mr-4">
+                <h2 className="text-xl font-bold">
+                  {pokemon.japaneseName || pokemon.name}
+                </h2>
+                {pokemon.category && (
+                  <p className="text-sm text-gray-600">{pokemon.category}</p>
+                )}
+              </div>
+              <img
+                src={pokemon.sprites.front_default}
+                alt={pokemon.name}
+                className="w-16 h-16 object-contain"
+              />
+            </div>
+            <div className="flex gap-2 mb-3">
+              {pokemon.types.map((type) => (
+                <span
+                  key={type}
+                  className="px-2 py-1 rounded-full text-xs font-semibold text-white"
+                  style={{ backgroundColor: getTypeColor(type) }}
+                >
+                  {typeTranslations[type.toLowerCase()] || type}
+                </span>
+              ))}
+            </div>
           </div>
-          <ul className="w-full">
+          <ul className="w-full mb-2">
             {pokemon.stats.map((stat, index) => (
               <li
                 key={stat.name}
-                className="flex justify-between items-center mb-3"
+                className="flex justify-between items-center mb-2"
               >
-                <span className="text-base font-medium w-24">
+                <span className="text-sm font-medium w-20">
                   {statTranslations[stat.name] || stat.name}:
                 </span>
                 <span
-                  className={`text-2xl font-bold w-16 text-right mr-2 ${
+                  className={`text-lg font-bold w-12 text-right mr-2 ${
                     stat.value === maxStat ? "text-indigo-700" : ""
                   } ${animateStats ? "animate-stat-pop" : ""}`}
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   {stat.value}
                 </span>
-                <div className="w-1/2 bg-gray-200 rounded-full h-3">
+                <div className="w-1/2 bg-gray-200 rounded-full h-2">
                   <div
-                    className={`h-3 rounded-full ${
+                    className={`h-2 rounded-full ${
                       stat.value === maxStat ? "bg-indigo-600" : "bg-teal-500"
                     } ${animateStats ? "animate-stat-bar" : ""}`}
                     style={{
@@ -207,8 +237,8 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
       <div
         className={`absolute w-full h-full ${cardFace === 2 ? "" : "hidden"}`}
       >
-        <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-gray-100 to-gray-300 rounded-xl">
-          <div className="flex items-center mb-4">
+        <div className="w-full h-full flex flex-col p-4 bg-gradient-to-br from-gray-100 to-gray-300 rounded-xl">
+          <div className="flex items-center mb-2">
             <div className="flex flex-col items-start mr-4">
               <h2 className="text-xl font-bold">
                 {pokemon.japaneseName || pokemon.name}
@@ -223,12 +253,53 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
               className="w-16 h-16 object-contain"
             />
           </div>
-          <p className="text-sm text-gray-800 mb-4 overflow-y-auto max-h-36">
-            {pokemon.description}
-          </p>
-          <div className="mt-2 text-center">
-            <p className="text-base">身長: {pokemon.height / 10}m</p>
-            <p className="text-base">体重: {pokemon.weight / 10}kg</p>
+          <div className="flex gap-2 mb-2">
+            {pokemon.types.map((type) => (
+              <span
+                key={type}
+                className="px-2 py-1 rounded-full text-xs font-semibold text-white"
+                style={{ backgroundColor: getTypeColor(type) }}
+              >
+                {typeTranslations[type.toLowerCase()] || type}
+              </span>
+            ))}
+          </div>
+          <div className="flex mt-1">
+            <span className="text-xs font-semibold mr-2 w-12">体格:</span>
+            <div>
+              <p className="text-xs">身長: {pokemon.height / 10}m</p>
+              <p className="text-xs">体重: {pokemon.weight / 10}kg</p>
+            </div>
+          </div>
+          <div className="flex mt-1">
+            <span className="text-xs font-semibold mr-2 w-12">特性:</span>
+            <ul className="list-none">
+              {pokemon.abilities.map((ability, index) => (
+                <li key={index} className="text-xs">
+                  {getAbilityJapaneseName(ability.name)}
+                  {ability.is_hidden && " (隠れ特性)"}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="mt-2">
+            <span className="text-xs font-semibold mb-1 block">能力値:</span>
+            <div className="grid grid-cols-2 gap-x-2 gap-y-1">
+              {pokemon.stats.map((stat) => (
+                <div key={stat.name} className="flex justify-between">
+                  <span className="text-xs font-medium">
+                    {statTranslations[stat.name] || stat.name}:
+                  </span>
+                  <span className="text-xs font-bold">{stat.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="flex-grow" />
+          <div className="mt-1">
+            <p className="text-xs text-gray-800 overflow-y-auto max-h-20">
+              {pokemon.description}
+            </p>
           </div>
           <FavoriteButton />
         </div>
