@@ -5,15 +5,15 @@ import { isFavorite } from "./FavoriteReducer";
 import { useTypeFiltering } from "../hooks/useTypeFiltering";
 import { useTypeContext } from "../hooks/useTypeContext";
 import { useSearchContext } from "../contexts/SearchContext";
-import Layout from "./Layout";
 import { useStatsFilterContext } from "../contexts/StatsFilterContext";
+import Layout from "./Layout";
 
 export default function Favorites() {
   const { favorites, dispatch } = useContext(FavoritesContext);
   const [pokemons, setPokemons] = useState([]);
   const { selectedTypes } = useTypeContext();
   const { filterText } = useSearchContext();
-  const { attackFilter } = useStatsFilterContext();
+  const { statsFilter } = useStatsFilterContext();
 
   useEffect(() => {
     const storedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
@@ -23,15 +23,19 @@ export default function Favorites() {
   const { filteredPokemons } = useTypeFiltering(pokemons, selectedTypes);
 
   const finalFilteredPokemons = useMemo(() => {
-    return filteredPokemons.filter(
-      (pokemon) =>
-        (pokemon.name.toLowerCase().includes(filterText.toLowerCase()) ||
-          (pokemon.japaneseName &&
-            pokemon.japaneseName.includes(filterText))) &&
-        pokemon.stats.find((stat) => stat.name === "attack").value >=
-          attackFilter
-    );
-  }, [filteredPokemons, filterText, attackFilter]);
+    return filteredPokemons.filter((pokemon) => {
+      const nameMatch =
+        pokemon.name.toLowerCase().includes(filterText.toLowerCase()) ||
+        (pokemon.japaneseName && pokemon.japaneseName.includes(filterText));
+
+      const statsMatch = pokemon.stats.every((stat) => {
+        const statName = stat.stat.name.replace("-", "");
+        return stat.base_stat >= (statsFilter[statName] || 0);
+      });
+
+      return nameMatch && statsMatch;
+    });
+  }, [filteredPokemons, filterText, statsFilter]);
 
   const checkIsFavorite = useCallback(
     (pokemon) => {

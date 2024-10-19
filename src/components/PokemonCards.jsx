@@ -6,6 +6,7 @@ import { usePokemonData } from "../hooks/usePokemonData";
 import { useTypeFiltering } from "../hooks/useTypeFiltering";
 import { useTypeContext } from "../hooks/useTypeContext";
 import { useSearchContext } from "../contexts/SearchContext";
+import { useStatsFilterContext } from "../contexts/StatsFilterContext";
 import PokemonTitle from "./PokemonTitle";
 import Layout from "./Layout";
 
@@ -14,6 +15,7 @@ export default function PokemonCards() {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
     usePokemonData();
   const { selectedTypes } = useTypeContext();
+  const { statsFilter } = useStatsFilterContext();
 
   const allPokemons = useMemo(() => {
     return data?.pages?.flatMap((page) => page.results) || [];
@@ -22,12 +24,27 @@ export default function PokemonCards() {
   const { filteredPokemons } = useTypeFiltering(allPokemons, selectedTypes);
 
   const finalFilteredPokemons = useMemo(() => {
-    return filteredPokemons.filter(
-      (pokemon) =>
+    return filteredPokemons.filter((pokemon) => {
+      const nameMatch =
         pokemon.name.toLowerCase().includes(filterText.toLowerCase()) ||
-        (pokemon.japaneseName && pokemon.japaneseName.includes(filterText))
-    );
-  }, [filteredPokemons, filterText]);
+        (pokemon.japaneseName && pokemon.japaneseName.includes(filterText));
+
+      const statsMatch = pokemon.stats.every((stat) => {
+        const statName = stat.name || (stat.stat && stat.stat.name);
+        if (!statName) return true;
+
+        // ここでstatNameをstatsFilterのキーに変換
+        let statKey = statName.replace("-", "").toLowerCase();
+        if (statKey === "specialattack") statKey = "specialAttack";
+        if (statKey === "specialdefense") statKey = "specialDefense";
+
+        const statValue = stat.base_stat || stat.value;
+        return statValue >= (statsFilter[statKey] || 0);
+      });
+
+      return nameMatch && statsMatch;
+    });
+  }, [filteredPokemons, filterText, statsFilter]);
 
   return (
     <Layout>
