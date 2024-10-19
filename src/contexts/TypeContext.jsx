@@ -1,6 +1,6 @@
-import { createContext, useState, useContext } from "react";
+import { createContext, useState } from "react";
 
-const TypeContext = createContext();
+export const TypeContext = createContext();
 
 // eslint-disable-next-line react/prop-types
 export function TypeProvider({ children }) {
@@ -19,8 +19,4 @@ export function TypeProvider({ children }) {
       {children}
     </TypeContext.Provider>
   );
-}
-
-export function useTypeContext() {
-  return useContext(TypeContext);
 }

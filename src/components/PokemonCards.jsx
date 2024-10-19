@@ -5,7 +5,7 @@ import SearchBar from "./SearchBar";
 import PokemonList from "./PokemonList";
 import { usePokemonData } from "../hooks/usePokemonData";
 import { useTypeFiltering } from "../hooks/useTypeFiltering";
-import { useTypeContext } from "../contexts/TypeContext";
+import { useTypeContext } from "../hooks/useTypeContext";
 
 export default function PokemonCards() {
   const [filterText, setFilterText] = useState("");

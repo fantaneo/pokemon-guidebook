@@ -2,7 +2,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Link, useLocation } from "react-router-dom";
 import { POKEMON_TYPES } from "../constants/pokemonTypes";
 import { MdArrowForwardIos } from "react-icons/md";
-import { useTypeContext } from "../contexts/TypeContext";
+import { useTypeContext } from "../hooks/useTypeContext";
 
 // eslint-disable-next-line react/prop-types
 export default function SideMenu() {

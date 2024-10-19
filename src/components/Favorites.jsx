@@ -5,7 +5,7 @@ import SideMenu from "./SideMenu";
 import PokemonCard from "./PokemonCard";
 import { isFavorite } from "./FavoriteReducer";
 import { useTypeFiltering } from "../hooks/useTypeFiltering";
-import { useTypeContext } from "../contexts/TypeContext";
+import { useTypeContext } from "../hooks/useTypeContext";
 
 export default function Favorites() {
   const { favorites, dispatch } = useContext(FavoritesContext);
