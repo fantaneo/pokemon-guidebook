@@ -6,6 +6,7 @@ import PokemonList from "./PokemonList";
 import { usePokemonData } from "../hooks/usePokemonData";
 import { useTypeFiltering } from "../hooks/useTypeFiltering";
 import { useTypeContext } from "../hooks/useTypeContext";
+import PokemonTitle from "./PokemonTitle";
 
 export default function PokemonCards() {
   const [filterText, setFilterText] = useState("");
@@ -29,6 +30,7 @@ export default function PokemonCards() {
 
   return (
     <div className="flex min-h-screen flex-col">
+      <PokemonTitle />
       <Header />
       <div className="flex flex-1">
         <aside className="hidden w-64 border-r lg:block">
