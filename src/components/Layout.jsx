@@ -1,18 +1,22 @@
 import React from "react";
 import Header from "./Header";
 import SideMenu from "./SideMenu";
-import PokemonTitle from "./PokemonTitle";
 
 export default function Layout({ children }) {
   return (
-    <div className="flex min-h-screen flex-col">
-      <PokemonTitle />
-      <Header />
-      <div className="flex flex-1">
-        <aside className="hidden w-64 border-r lg:block">
-          <SideMenu />
-        </aside>
-        <main className="flex-1 p-6">{children}</main>
+    <div className="flex h-screen overflow-hidden bg-pale-yellow">
+      {" "}
+      {/* カスタムカラーを使用 */}
+      {/* サイドバー */}
+      <aside className="hidden lg:block w-64 overflow-y-auto">
+        <SideMenu />
+      </aside>
+      {/* メインコンテンツ */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <Header />
+        <main className="flex-1 overflow-x-hidden overflow-y-auto">
+          {children}
+        </main>
       </div>
     </div>
   );

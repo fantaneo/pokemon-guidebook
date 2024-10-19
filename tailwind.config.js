@@ -50,6 +50,7 @@ export default {
           4: "hsl(var(--chart-4))",
           5: "hsl(var(--chart-5))",
         },
+        "pale-yellow": "#FFFEF4", // より薄い黄色
       },
       rotate: {
         "y-180": "rotateY(180deg)",
