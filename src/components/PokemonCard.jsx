@@ -19,6 +19,7 @@ PokemonCard.propTypes = {
         value: PropTypes.number.isRequired,
       })
     ).isRequired,
+    category: PropTypes.string,
   }).isRequired,
   toggleFavorite: PropTypes.func.isRequired,
   isFavorite: PropTypes.bool.isRequired,
@@ -106,6 +107,9 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
           <h2 className="text-xl font-bold mb-2">
             {pokemon.japaneseName || pokemon.name}
           </h2>
+          {pokemon.category && (
+            <p className="text-sm text-gray-600 mb-2">{pokemon.category}</p>
+          )}
           <div className="flex gap-2 mb-2">
             {pokemon.types.map((type) => (
               <span

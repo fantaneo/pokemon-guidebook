@@ -32,6 +32,7 @@ const fetchAllPokemons = async () => {
           front_default: detailData.sprites.front_default,
           back_default: detailData.sprites.back_default,
         },
+        category: await fetchPokemonCategory(detailData.species.url),
       };
     })
   );
@@ -42,6 +43,15 @@ const fetchJapaneseName = async (url) => {
   const response = await fetch(url);
   const data = await response.json();
   return data.names.find((name) => name.language.name === "ja")?.name || "";
+};
+
+const fetchPokemonCategory = async (speciesUrl) => {
+  const response = await fetch(speciesUrl);
+  const data = await response.json();
+  const japaneseCategoryEntry = data.genera.find(
+    (entry) => entry.language.name === "ja-Hrkt"
+  );
+  return japaneseCategoryEntry ? japaneseCategoryEntry.genus : "";
 };
 
 export function usePokemonData() {
