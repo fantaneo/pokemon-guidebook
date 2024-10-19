@@ -50,11 +50,11 @@ export default function PokemonList({
           const typeMatch =
             selectedTypes.length === 0 ||
             (Array.isArray(pokemon.types) &&
-              selectedTypes.every((selectedType) =>
-                pokemon.types.some(
-                  (pokemonType) =>
-                    pokemonType.toLowerCase() ===
-                    POKEMON_TYPE_MAPPING[selectedType].toLowerCase()
+              pokemon.types.some((pokemonType) =>
+                selectedTypes.some(
+                  (selectedType) =>
+                    POKEMON_TYPE_MAPPING[selectedType].toLowerCase() ===
+                    pokemonType.toLowerCase()
                 )
               ));
 
@@ -62,6 +62,12 @@ export default function PokemonList({
         })
       )
     : [];
+
+  useEffect(() => {
+    if (filteredPokemons.length < 20 && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [filteredPokemons, hasNextPage, fetchNextPage]);
 
   if (status === "loading") {
     return <p>ポケモンデータを読み込んでいます...</p>;
