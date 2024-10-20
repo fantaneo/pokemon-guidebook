@@ -22,7 +22,41 @@ const fetchPokemonDetails = async (speciesUrl) => {
     data.flavor_text_entries.find((entry) => entry.language.name === "ja")
       ?.flavor_text || "";
 
-  return { japaneseName, category, description: japaneseFlavorText };
+  // 進化チェーンの情報を取得
+  const evolutionChainResponse = await fetch(data.evolution_chain.url);
+  const evolutionChainData = await evolutionChainResponse.json();
+
+  // 進化チェーンのデータ構造を整形
+  const formatEvolutionChain = async (chain) => {
+    const speciesResponse = await fetch(chain.species.url);
+    const speciesData = await speciesResponse.json();
+
+    return {
+      species: {
+        name: chain.species.name,
+        japaneseName:
+          speciesData.names.find((name) => name.language.name === "ja")?.name ||
+          chain.species.name,
+        imageUrl: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
+          chain.species.url.split("/").slice(-2, -1)[0]
+        }.png`,
+      },
+      evolves_to: await Promise.all(
+        (chain.evolves_to || []).map(formatEvolutionChain)
+      ),
+    };
+  };
+
+  const formattedEvolutionChain = await formatEvolutionChain(
+    evolutionChainData.chain
+  );
+
+  return {
+    japaneseName,
+    category,
+    description: japaneseFlavorText,
+    evolutionChain: formattedEvolutionChain,
+  };
 };
 
 const fetchAllPokemons = async () => {
@@ -58,6 +92,7 @@ const fetchAllPokemons = async () => {
         },
         category: speciesDetails.category,
         description: speciesDetails.description,
+        evolutionChain: speciesDetails.evolutionChain,
       };
     })
   );
@@ -66,12 +101,15 @@ const fetchAllPokemons = async () => {
 
 export function usePokemonData() {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [cachedData, setCachedData] = useState(null);
 
   const checkCachedData = useCallback(() => {
-    const cachedData = localStorage.getItem(CACHE_KEY);
-    if (cachedData) {
-      const { timestamp } = JSON.parse(cachedData);
+    const storedData = localStorage.getItem(CACHE_KEY);
+    if (storedData) {
+      const { timestamp, data } = JSON.parse(storedData);
       if (Date.now() - timestamp < CACHE_EXPIRY) {
+        console.log("キャッシュからポケモンデータを読み込みます。");
+        setCachedData(data);
         setIsInitialLoad(false);
         return true;
       }
@@ -80,65 +118,67 @@ export function usePokemonData() {
   }, []);
 
   useEffect(() => {
-    checkCachedData();
+    const hasCachedData = checkCachedData();
+    if (!hasCachedData) {
+      console.log("全ポケモンの取得を開始します。");
+      fetchAllPokemons().then((allPokemons) => {
+        localStorage.setItem(
+          CACHE_KEY,
+          JSON.stringify({
+            data: allPokemons,
+            timestamp: Date.now(),
+          })
+        );
+        setCachedData(allPokemons);
+        setIsInitialLoad(false);
+      });
+    }
   }, [checkCachedData]);
 
   const fetchPokemonsWithCache = useCallback(
-    async ({ pageParam = 0 }) => {
-      if (checkCachedData()) {
-        const { data } = JSON.parse(localStorage.getItem(CACHE_KEY));
-        const start = pageParam * POKEMONS_PER_PAGE;
-        const end = start + POKEMONS_PER_PAGE;
-        return {
-          results: data.slice(start, end),
-          nextOffset: end < data.length ? pageParam + 1 : undefined,
-          count: data.length,
-        };
+    ({ pageParam = 0 }) => {
+      if (!cachedData) {
+        return Promise.resolve({
+          results: [],
+          nextOffset: undefined,
+          count: 0,
+        });
       }
-
-      // キャッシュが存在しないか期限切れの場合のみ、全ポケモンデータを取得
-      const allPokemons = await fetchAllPokemons();
-      localStorage.setItem(
-        CACHE_KEY,
-        JSON.stringify({
-          data: allPokemons,
-          timestamp: Date.now(),
-        })
-      );
-
       const start = pageParam * POKEMONS_PER_PAGE;
       const end = start + POKEMONS_PER_PAGE;
-      return {
-        results: allPokemons.slice(start, end),
-        nextOffset: end < allPokemons.length ? pageParam + 1 : undefined,
-        count: allPokemons.length,
-      };
+      return Promise.resolve({
+        results: cachedData.slice(start, end),
+        nextOffset: end < cachedData.length ? pageParam + 1 : undefined,
+        count: cachedData.length,
+      });
     },
-    [checkCachedData]
+    [cachedData]
   );
 
   const query = useInfiniteQuery("pokemons", fetchPokemonsWithCache, {
     getNextPageParam: (lastPage) => lastPage.nextOffset,
-    onSuccess: () => {
-      setIsInitialLoad(false);
-    },
-    staleTime: CACHE_EXPIRY,
-    cacheTime: CACHE_EXPIRY,
+    enabled: !isInitialLoad,
+    staleTime: Infinity,
+    cacheTime: Infinity,
   });
 
-  const data = useMemo(
-    () =>
-      query.data
-        ? {
-            ...query.data,
-            pages: query.data.pages.map((page) => ({
-              ...page,
-              results: page.results,
-            })),
-          }
-        : undefined,
-    [query.data]
-  );
+  const data = useMemo(() => {
+    if (cachedData) {
+      const pages = [];
+      for (let i = 0; i < cachedData.length; i += POKEMONS_PER_PAGE) {
+        pages.push({
+          results: cachedData.slice(i, i + POKEMONS_PER_PAGE),
+          nextOffset:
+            i + POKEMONS_PER_PAGE < cachedData.length
+              ? i / POKEMONS_PER_PAGE + 1
+              : undefined,
+          count: cachedData.length,
+        });
+      }
+      return { pages };
+    }
+    return null;
+  }, [cachedData]);
 
   return { ...query, data, isInitialLoad };
 }

@@ -1,8 +1,8 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import PropTypes from "prop-types";
 import { POKEMON_TYPE_MAPPING } from "../constants/pokemonTypeMapping";
 import { POKEMON_ABILITIES } from "../constants/pokemonAbilities";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { FaHeart, FaRegHeart, FaLevelUpAlt, FaArrowDown } from "react-icons/fa";
 import { getTypeGradient } from "../utils/typeGradients";
 
 PokemonCard.propTypes = {
@@ -58,22 +58,94 @@ const typeTranslations = {
 const statTranslations = {
   hp: "HP",
   attack: "こうげき",
-  defense: "ぼうぎょ",
+  defense: "ぼうぎ",
   "special-attack": "とくこう",
   "special-defense": "とくぼう",
   speed: "すばやさ",
 };
 
+const fetchEvolutionChain = async (pokemonName) => {
+  try {
+    console.log("進化チェーンの取得を開始します。");
+    const speciesResponse = await fetch(
+      `https://pokeapi.co/api/v2/pokemon-species/${pokemonName}`
+    );
+    const speciesData = await speciesResponse.json();
+    const evolutionChainResponse = await fetch(speciesData.evolution_chain.url);
+    const evolutionChainData = await evolutionChainResponse.json();
+    return evolutionChainData;
+  } catch (error) {
+    console.error("進化チェーンの取得に失敗しました:", error);
+    return null;
+  }
+};
+
+const getEvolutionStages = (chain, currentPokemonName) => {
+  const stages = [];
+  let currentStage = chain;
+
+  while (currentStage) {
+    stages.push({
+      name: currentStage.species.name,
+      japaneseName: currentStage.species.japaneseName,
+      imageUrl: currentStage.species.imageUrl,
+      isCurrent:
+        currentStage.species.name.toLowerCase() ===
+        currentPokemonName.toLowerCase(),
+    });
+    currentStage = currentStage.evolves_to[0];
+  }
+
+  return stages;
+};
+
+const fetchJapaneseName = async (pokemonName) => {
+  try {
+    const response = await fetch(
+      `https://pokeapi.co/api/v2/pokemon-species/${pokemonName}`
+    );
+    const data = await response.json();
+    const japaneseName = data.names.find(
+      (name) => name.language.name === "ja"
+    )?.name;
+    return japaneseName || pokemonName;
+  } catch (error) {
+    console.error("日本語名の取得に失敗しました:", error);
+    return pokemonName;
+  }
+};
+
+const fetchPokemonImage = async (pokemonName) => {
+  try {
+    const response = await fetch(
+      `https://pokeapi.co/api/v2/pokemon/${pokemonName}`
+    );
+    const data = await response.json();
+    return data.sprites.front_default;
+  } catch (error) {
+    console.error("ポケモン画像の取得に失敗しました:", error);
+    return null;
+  }
+};
+
 export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
   const [cardFace, setCardFace] = useState(0);
   const [animateStats, setAnimateStats] = useState(false);
+  const [evolutionStages, setEvolutionStages] = useState([]);
+
+  useEffect(() => {
+    if (pokemon.evolutionChain) {
+      const stages = getEvolutionStages(pokemon.evolutionChain, pokemon.name);
+      setEvolutionStages(stages);
+    }
+  }, [pokemon]);
 
   const handleCardFlip = () => {
     setCardFace((prevFace) => {
-      const newFace = (prevFace + 1) % 3;
+      const newFace = (prevFace + 1) % 4;
       if (newFace === 1) {
         setAnimateStats(true);
-        setTimeout(() => setAnimateStats(false), 1000); // アニメーション終了後にリセット
+        setTimeout(() => setAnimateStats(false), 1000);
       }
       return newFace;
     });
@@ -110,7 +182,7 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
 
   const CardIndicator = () => (
     <div className="absolute bottom-2 left-0 right-0 flex justify-center space-x-2">
-      {[0, 1, 2].map((index) => (
+      {[0, 1, 2, 3].map((index) => (
         <div
           key={index}
           className={`w-2 h-2 rounded-full ${
@@ -171,7 +243,7 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
         </div>
       </div>
 
-      {/* 裏面 (能力値) */}
+      {/* 裏 (能力値) */}
       <div
         className={`absolute w-full h-full ${cardFace === 1 ? "" : "hidden"}`}
       >
@@ -290,7 +362,7 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
               {pokemon.abilities.map((ability, index) => (
                 <li key={index} className="text-sm">
                   {getAbilityJapaneseName(ability.name)}
-                  {ability.is_hidden && " (隠れ特性)"}
+                  {ability.is_hidden && " (隠れ特)"}
                 </li>
               ))}
             </ul>
@@ -312,6 +384,61 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
             <p className="text-sm text-gray-800 overflow-y-auto max-h-20">
               {pokemon.description}
             </p>
+          </div>
+          <FavoriteButton />
+        </div>
+      </div>
+
+      {/* 進化チェーン */}
+      <div
+        className={`absolute w-full h-full ${cardFace === 3 ? "" : "hidden"}`}
+      >
+        <div
+          className="w-full h-full flex flex-col p-2 rounded-xl overflow-y-auto"
+          style={{ background: cardBackground }}
+        >
+          <h2 className="text-xl font-bold mb-2">進化チェーン</h2>
+          <div className="flex flex-col items-center justify-start flex-grow">
+            {Array.isArray(evolutionStages) && evolutionStages.length > 0 ? (
+              evolutionStages.map((stage, index) => (
+                <div
+                  key={stage.name}
+                  className="w-full flex flex-col items-center relative mb-2"
+                >
+                  <div
+                    className={`w-full flex items-center justify-center ${
+                      stage.isCurrent
+                        ? "bg-blue-100 bg-opacity-70 p-1 rounded-lg"
+                        : ""
+                    }`}
+                  >
+                    <div className="relative">
+                      {stage.imageUrl && (
+                        <img
+                          src={stage.imageUrl}
+                          alt={stage.name}
+                          className="w-24 h-24"
+                        />
+                      )}
+                    </div>
+                    <div
+                      className={`ml-2 text-sm font-semibold ${
+                        stage.isCurrent ? "text-blue-600" : ""
+                      }`}
+                    >
+                      {stage.japaneseName}
+                    </div>
+                  </div>
+                  {index < evolutionStages.length - 1 && (
+                    <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 text-green-500 z-20">
+                      <FaArrowDown size={20} />
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <p>進化情報がありません</p>
+            )}
           </div>
           <FavoriteButton />
         </div>
