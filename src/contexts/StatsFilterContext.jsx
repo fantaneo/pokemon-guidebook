@@ -17,8 +17,8 @@ export const StatsFilterProvider = ({ children }) => {
     hp: 0,
     attack: 0,
     defense: 0,
-    specialAttack: 0, // キャメルケースに変更
-    specialDefense: 0, // キャメルケースに変更
+    specialAttack: 0,
+    specialDefense: 0,
     speed: 0,
   });
 
@@ -26,7 +26,6 @@ export const StatsFilterProvider = ({ children }) => {
     setStatsFilter((prev) => ({ ...prev, [stat]: value }));
   };
 
-  // フィルターをリセットする関数を追加
   const resetStatsFilter = () => {
     setStatsFilter({
       hp: 0,

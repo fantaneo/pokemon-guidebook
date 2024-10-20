@@ -1,5 +1,11 @@
-import { useContext, useState, useCallback, useEffect, useMemo } from "react";
-import { FavoritesContext } from "./FavoritesContext.jsx";
+import React, {
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+} from "react";
+import { FavoritesContext } from "./FavoritesContext";
 import PokemonCard from "./PokemonCard";
 import { isFavorite } from "./FavoriteReducer";
 import { useTypeFiltering } from "../hooks/useTypeFiltering";
@@ -29,8 +35,15 @@ export default function Favorites() {
         (pokemon.japaneseName && pokemon.japaneseName.includes(filterText));
 
       const statsMatch = pokemon.stats.every((stat) => {
-        const statName = stat.stat.name.replace("-", "");
-        return stat.base_stat >= (statsFilter[statName] || 0);
+        const statName = stat.name || (stat.stat && stat.stat.name);
+        if (!statName) return true;
+
+        let statKey = statName.replace("-", "").toLowerCase();
+        if (statKey === "specialattack") statKey = "specialAttack";
+        if (statKey === "specialdefense") statKey = "specialDefense";
+
+        const statValue = stat.base_stat || stat.value;
+        return statValue >= (statsFilter[statKey] || 0);
       });
 
       return nameMatch && statsMatch;
