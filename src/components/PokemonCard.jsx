@@ -132,6 +132,7 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
   const [cardFace, setCardFace] = useState(0);
   const [animateStats, setAnimateStats] = useState(false);
   const [evolutionStages, setEvolutionStages] = useState([]);
+  const [isFlipping, setIsFlipping] = useState(false);
 
   useEffect(() => {
     if (pokemon.evolutionChain) {
@@ -141,14 +142,18 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
   }, [pokemon]);
 
   const handleCardFlip = () => {
-    setCardFace((prevFace) => {
-      const newFace = (prevFace + 1) % 4;
-      if (newFace === 1) {
-        setAnimateStats(true);
-        setTimeout(() => setAnimateStats(false), 1000);
-      }
-      return newFace;
-    });
+    setIsFlipping(true);
+    setTimeout(() => {
+      setCardFace((prevFace) => {
+        const newFace = (prevFace + 1) % 4;
+        if (newFace === 1) {
+          setAnimateStats(true);
+          setTimeout(() => setAnimateStats(false), 1000);
+        }
+        return newFace;
+      });
+      setIsFlipping(false);
+    }, 300);
   };
 
   const getTypeColor = (type) => {
@@ -210,7 +215,9 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
     >
       {/* 表面 */}
       <div
-        className={`absolute w-full h-full ${cardFace === 0 ? "" : "hidden"}`}
+        className={`absolute w-full h-full ${cardFace === 0 ? "" : "hidden"} ${
+          isFlipping ? "flip-card" : ""
+        }`}
       >
         <div
           className="w-full h-full flex flex-col items-center justify-center p-4 rounded-xl"
@@ -245,7 +252,9 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
 
       {/* 裏 (能力値) */}
       <div
-        className={`absolute w-full h-full ${cardFace === 1 ? "" : "hidden"}`}
+        className={`absolute w-full h-full ${cardFace === 1 ? "" : "hidden"} ${
+          isFlipping ? "flip-card" : ""
+        }`}
       >
         <div
           className="w-full h-full flex flex-col items-center justify-center p-4 rounded-xl"
@@ -317,7 +326,9 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
 
       {/* フレーバーテキストと追加情報 */}
       <div
-        className={`absolute w-full h-full ${cardFace === 2 ? "" : "hidden"}`}
+        className={`absolute w-full h-full ${cardFace === 2 ? "" : "hidden"} ${
+          isFlipping ? "flip-card" : ""
+        }`}
       >
         <div
           className="w-full h-full flex flex-col p-4 rounded-xl"
@@ -391,47 +402,51 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
 
       {/* 進化チェーン */}
       <div
-        className={`absolute w-full h-full ${cardFace === 3 ? "" : "hidden"}`}
+        className={`absolute w-full h-full ${cardFace === 3 ? "" : "hidden"} ${
+          isFlipping ? "flip-card" : ""
+        }`}
       >
         <div
           className="w-full h-full flex flex-col p-2 rounded-xl overflow-y-auto"
           style={{ background: cardBackground }}
         >
           <h2 className="text-xl font-bold mb-2">進化チェーン</h2>
-          <div className="flex flex-col items-center justify-start flex-grow">
+          <div className="flex flex-col items-center justify-start flex-grow -space-y-4">
             {Array.isArray(evolutionStages) && evolutionStages.length > 0 ? (
               evolutionStages.map((stage, index) => (
                 <div
                   key={stage.name}
-                  className="w-full flex flex-col items-center relative mb-2"
+                  className="w-full flex flex-col items-center relative"
                 >
-                  <div
-                    className={`w-full flex items-center justify-center ${
-                      stage.isCurrent
-                        ? "bg-blue-100 bg-opacity-70 p-1 rounded-lg"
-                        : ""
-                    }`}
-                  >
+                  <div className="w-full flex items-center justify-center p-2 rounded-lg transition-all duration-300">
                     <div className="relative">
                       {stage.imageUrl && (
                         <img
                           src={stage.imageUrl}
                           alt={stage.name}
-                          className="w-24 h-24"
+                          className="w-24 h-24 transition-all duration-300"
                         />
                       )}
                     </div>
                     <div
-                      className={`ml-2 text-sm font-semibold ${
-                        stage.isCurrent ? "text-blue-600" : ""
+                      className={`ml-2 px-3 py-1 rounded-full transition-all duration-300 ${
+                        stage.isCurrent
+                          ? "bg-sky-100 bg-opacity-50 border-2 border-sky-500 shadow-sm"
+                          : ""
                       }`}
                     >
-                      {stage.japaneseName}
+                      <span
+                        className={`text-sm font-semibold ${
+                          stage.isCurrent ? "text-sky-700" : "text-gray-700"
+                        }`}
+                      >
+                        {stage.japaneseName}
+                      </span>
                     </div>
                   </div>
                   {index < evolutionStages.length - 1 && (
-                    <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 text-green-500 z-20">
-                      <FaArrowDown size={20} />
+                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 text-green-500 bg-white rounded-full p-1 z-20 shadow-md">
+                      <FaArrowDown size={16} />
                     </div>
                   )}
                 </div>
