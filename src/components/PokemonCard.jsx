@@ -226,15 +226,15 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
           <img
             src={pokemon.sprites.front_default}
             alt={pokemon.name}
-            className="w-32 h-32 object-contain mb-4"
+            className="w-40 h-40 object-contain mb-2"
           />
-          <h2 className="text-xl font-bold mb-2">
+          <h2 className="text-xl font-bold mb-1">
             {pokemon.japaneseName || pokemon.name}
           </h2>
           {pokemon.category && (
-            <p className="text-sm text-gray-600 mb-2">{pokemon.category}</p>
+            <p className="text-sm text-gray-600 mb-1">{pokemon.category}</p>
           )}
-          <div className="flex gap-2 mb-2">
+          <div className="flex gap-2 mb-1">
             {pokemon.types.map((type) => (
               <span
                 key={type}
@@ -245,7 +245,6 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
               </span>
             ))}
           </div>
-          <p className="text-sm text-gray-600">タップしてさらに詳細を表示</p>
           <FavoriteButton />
         </div>
       </div>
