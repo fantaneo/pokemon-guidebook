@@ -32,6 +32,11 @@ PokemonCard.propTypes = {
   }).isRequired,
   toggleFavorite: PropTypes.func.isRequired,
   isFavorite: PropTypes.bool.isRequired,
+  initialCardFace: PropTypes.number,
+};
+
+PokemonCard.defaultProps = {
+  initialCardFace: 0,
 };
 
 const typeTranslations = {
@@ -128,8 +133,13 @@ const fetchPokemonImage = async (pokemonName) => {
   }
 };
 
-export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
-  const [cardFace, setCardFace] = useState(0);
+export default function PokemonCard({
+  pokemon,
+  toggleFavorite,
+  isFavorite,
+  initialCardFace,
+}) {
+  const [cardFace, setCardFace] = useState(initialCardFace);
   const [animateStats, setAnimateStats] = useState(false);
   const [evolutionStages, setEvolutionStages] = useState([]);
   const [isFlipping, setIsFlipping] = useState(false);
@@ -140,6 +150,20 @@ export default function PokemonCard({ pokemon, toggleFavorite, isFavorite }) {
       setEvolutionStages(stages);
     }
   }, [pokemon]);
+
+  useEffect(() => {
+    if (cardFace !== initialCardFace) {
+      setIsFlipping(true);
+      setTimeout(() => {
+        setCardFace(initialCardFace);
+        setIsFlipping(false);
+        if (initialCardFace === 1) {
+          setAnimateStats(true);
+          setTimeout(() => setAnimateStats(false), 1000);
+        }
+      }, 300);
+    }
+  }, [initialCardFace]);
 
   const handleCardFlip = () => {
     setIsFlipping(true);

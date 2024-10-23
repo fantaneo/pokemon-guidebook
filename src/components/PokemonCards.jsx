@@ -9,6 +9,7 @@ import { useSearchContext } from "../contexts/SearchContext";
 import { useStatsFilterContext } from "../contexts/StatsFilterContext";
 import PokemonTitle from "./PokemonTitle";
 import Layout from "./Layout";
+import CardFaceSelector from "./CardFaceSelector";
 
 export default function PokemonCards() {
   const { filterText } = useSearchContext();
@@ -16,6 +17,8 @@ export default function PokemonCards() {
     usePokemonData();
   const { selectedTypes } = useTypeContext();
   const { statsFilter } = useStatsFilterContext();
+  const [globalCardFace, setGlobalCardFace] = useState(0);
+  const [triggerAnimation, setTriggerAnimation] = useState(false);
 
   const allPokemons = useMemo(() => {
     return data?.pages?.flatMap((page) => page.results) || [];
@@ -46,6 +49,10 @@ export default function PokemonCards() {
     });
   }, [filteredPokemons, filterText, statsFilter]);
 
+  const handleTriggerAnimation = () => {
+    setTriggerAnimation((prev) => !prev);
+  };
+
   return (
     <Layout>
       <div className="p-5">
@@ -57,6 +64,12 @@ export default function PokemonCards() {
           isFetchingNextPage={isFetchingNextPage}
           status={status}
           filteredPokemons={finalFilteredPokemons}
+          globalCardFace={globalCardFace}
+          triggerAnimation={triggerAnimation}
+        />
+        <CardFaceSelector
+          setCardFace={setGlobalCardFace}
+          triggerAnimation={handleTriggerAnimation}
         />
       </div>
     </Layout>

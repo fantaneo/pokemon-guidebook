@@ -14,6 +14,7 @@ export default function PokemonList({
   isFetchingNextPage,
   status,
   filteredPokemons,
+  globalCardFace,
 }) {
   const { favorites, dispatch } = useContext(FavoritesContext);
   const observer = useRef();
@@ -86,6 +87,7 @@ export default function PokemonList({
                   payload: pokemon,
                 });
               }}
+              initialCardFace={globalCardFace}
             />
           </div>
         ))}
