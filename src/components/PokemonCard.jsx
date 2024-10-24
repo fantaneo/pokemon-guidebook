@@ -63,7 +63,7 @@ const typeTranslations = {
 const statTranslations = {
   hp: "HP",
   attack: "こうげき",
-  defense: "ぼうぎ",
+  defense: "ぼうぎょ",
   "special-attack": "とくこう",
   "special-defense": "とくぼう",
   speed: "すばやさ",
