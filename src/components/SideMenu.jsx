@@ -11,7 +11,8 @@ import { FaUndo } from "react-icons/fa";
 
 export default function SideMenu() {
   const location = useLocation();
-  const { selectedTypes, handleTypeSelect } = useTypeContext();
+  const { selectedTypes, handleTypeSelect, clearSelectedTypes } =
+    useTypeContext();
   const { statsFilter, updateStatFilter, resetStatsFilter } =
     useStatsFilterContext();
   const menuItems = [
@@ -59,7 +60,20 @@ export default function SideMenu() {
         検索
       </h2>
       <SearchBar />
-      <h2 className="mt-8 mb-4 text-lg font-semibold text-gray-800">タイプ</h2>
+      <h2 className="mt-8 mb-4 text-lg font-semibold text-gray-800 flex items-center justify-between">
+        タイプ
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            clearSelectedTypes();
+          }}
+          className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors duration-200 ease-in-out focus:outline-none focus:underline"
+        >
+          <FaUndo className="inline mr-2" />
+          リセット
+        </a>
+      </h2>
       <div className="flex flex-wrap gap-2 mb-8">
         {POKEMON_TYPES.map((type) => (
           <button

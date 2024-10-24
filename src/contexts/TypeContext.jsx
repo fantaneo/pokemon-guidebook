@@ -14,8 +14,14 @@ export function TypeProvider({ children }) {
     );
   };
 
+  const clearSelectedTypes = () => {
+    setSelectedTypes([]);
+  };
+
   return (
-    <TypeContext.Provider value={{ selectedTypes, handleTypeSelect }}>
+    <TypeContext.Provider
+      value={{ selectedTypes, handleTypeSelect, clearSelectedTypes }}
+    >
       {children}
     </TypeContext.Provider>
   );
