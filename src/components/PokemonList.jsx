@@ -46,17 +46,6 @@ export default function PokemonList({
     }
   }, [filteredPokemons, hasNextPage, fetchNextPage]);
 
-  const finalFilteredPokemons = useMemo(() => {
-    return filteredPokemons.filter(
-      (pokemon) =>
-        (pokemon.name.toLowerCase().includes(filterText.toLowerCase()) ||
-          (pokemon.japaneseName &&
-            pokemon.japaneseName.includes(filterText))) &&
-        pokemon.stats.find((stat) => stat.name === "attack").value >=
-          attackFilter
-    );
-  }, [filteredPokemons, filterText, attackFilter]);
-
   if (status === "loading") {
     return <p>ポケモンデータを読み込んでいます...</p>;
   }
@@ -67,37 +56,40 @@ export default function PokemonList({
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 p-4">
-        {filteredPokemons.map((pokemon, index) => (
-          <div
-            key={`${pokemon.name}-${index}`}
-            ref={
-              index === filteredPokemons.length - 1
-                ? lastPokemonElementRef
-                : null
-            }
-            className="w-full"
-          >
-            <PokemonCard
-              pokemon={pokemon}
-              isFavorite={checkIsFavorite(pokemon)}
-              toggleFavorite={() => {
-                dispatch({
-                  type: "TOGGLE_FAVORITE",
-                  payload: pokemon,
-                });
-              }}
-              initialCardFace={globalCardFace}
-            />
+      {filteredPokemons.length > 0 ? (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 p-4">
+            {filteredPokemons.map((pokemon, index) => (
+              <div
+                key={`${pokemon.name}-${index}`}
+                ref={
+                  index === filteredPokemons.length - 1
+                    ? lastPokemonElementRef
+                    : null
+                }
+                className="w-full"
+              >
+                <PokemonCard
+                  pokemon={pokemon}
+                  isFavorite={checkIsFavorite(pokemon)}
+                  toggleFavorite={() => {
+                    dispatch({
+                      type: "TOGGLE_FAVORITE",
+                      payload: pokemon,
+                    });
+                  }}
+                  initialCardFace={globalCardFace}
+                />
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      {isFetchingNextPage && <p>ポケモンをさらに読み込んでいます...</p>}
-      {!hasNextPage && finalFilteredPokemons.length > 0 && (
-        <p>すべてのポケモンを読み込みました</p>
-      )}
-      {finalFilteredPokemons.length === 0 && (
-        <p>該当するポケモンが見つかりません</p>
+          {isFetchingNextPage && <p>ポケモンをさらに読み込んでいます...</p>}
+          {!hasNextPage && filteredPokemons.length > 0 && (
+            <p>すべてのポケモンを読み込みました</p>
+          )}
+        </>
+      ) : (
+        <p className="text-center mt-8">該当するポケモンが見つかりません</p>
       )}
     </>
   );
