@@ -8,7 +8,7 @@ export default function Layout({ children }) {
       {" "}
       {/* カスタムカラーを使用 */}
       {/* サイドバー */}
-      <aside className="hidden lg:block w-64 overflow-y-auto">
+      <aside className="hidden lg:block w-64 flex-shrink-0 overflow-y-auto">
         <SideMenu />
       </aside>
       {/* メインコンテンツ */}

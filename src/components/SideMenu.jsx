@@ -34,7 +34,7 @@ export default function SideMenu() {
   };
 
   return (
-    <ScrollArea className="h-full py-6 px-4">
+    <ScrollArea className="h-full py-6 px-4 w-64 flex-shrink-0">
       <h2 className="mb-4 text-lg font-semibold text-gray-800">メニュー</h2>
       <nav className="space-y-2 mb-8">
         {menuItems.map((item) => (
