@@ -181,7 +181,7 @@ export default function PokemonCard({
   };
 
   const getTypeColor = (type) => {
-    return POKEMON_TYPE_MAPPING[type.toLowerCase()] || "#A8A878"; // ォルトは通常タイプの色
+    return POKEMON_TYPE_MAPPING[type.toLowerCase()] || "#A8A878"; // デフォルトは通常タイプの色
   };
 
   const maxStat = useMemo(() => {
@@ -247,6 +247,9 @@ export default function PokemonCard({
           className="w-full h-full flex flex-col items-center justify-center p-4 rounded-xl"
           style={{ background: cardBackground }}
         >
+          <div className="absolute top-2 left-2 px-2 py-1">
+            <span className="text-sm font-bold">No.{pokemon.id}</span>
+          </div>
           <div className="relative w-48 h-48 mb-2">
             <img
               src={pokemon.sprites.front_default}
