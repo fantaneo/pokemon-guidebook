@@ -17,19 +17,13 @@ import CardFaceSelector from "./CardFaceSelector";
 
 export default function Favorites() {
   const { favorites, dispatch } = useContext(FavoritesContext);
-  const [pokemons, setPokemons] = useState([]);
-  const { selectedTypes } = useTypeContext();
   const { filterText } = useSearchContext();
+  const { selectedTypes } = useTypeContext();
   const { statsFilter } = useStatsFilterContext();
   const [globalCardFace, setGlobalCardFace] = useState(0);
   const [triggerAnimation, setTriggerAnimation] = useState(false);
 
-  useEffect(() => {
-    const storedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
-    setPokemons(storedFavorites);
-  }, []);
-
-  const { filteredPokemons } = useTypeFiltering(pokemons, selectedTypes);
+  const { filteredPokemons } = useTypeFiltering(favorites, selectedTypes);
 
   const finalFilteredPokemons = useMemo(() => {
     return filteredPokemons.filter((pokemon) => {
@@ -64,25 +58,48 @@ export default function Favorites() {
     setTriggerAnimation((prev) => !prev);
   };
 
+  // ローディング状態を表すstate（必要に応じて）
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // お気に入りデータの読み込みが完了したらローディング状態を false に設定
+    setIsLoading(false);
+  }, [favorites]);
+
+  if (isLoading) {
+    return (
+      <p className="text-center mt-8">お気に入りデータを読み込んでいます...</p>
+    );
+  }
+
   return (
     <Layout>
       <div className="p-5">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
-          {finalFilteredPokemons.map((pokemon, index) => (
-            <div key={`${pokemon.name}-${index}`} className="w-full">
-              <PokemonCard
-                pokemon={pokemon}
-                isFavorite={checkIsFavorite(pokemon)}
-                toggleFavorite={() => {
-                  dispatch({ type: "TOGGLE_FAVORITE", payload: pokemon });
-                }}
-                initialCardFace={globalCardFace}
-              />
+        {finalFilteredPokemons.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+              {finalFilteredPokemons.map((pokemon, index) => (
+                <div key={`${pokemon.name}-${index}`} className="w-full">
+                  <PokemonCard
+                    pokemon={pokemon}
+                    isFavorite={checkIsFavorite(pokemon)}
+                    toggleFavorite={() => {
+                      dispatch({ type: "TOGGLE_FAVORITE", payload: pokemon });
+                    }}
+                    initialCardFace={globalCardFace}
+                  />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-        {finalFilteredPokemons.length === 0 && (
-          <p className="text-center mt-8">お気に入りのポケモンがありません</p>
+          </>
+        ) : (
+          <p className="text-center mt-8">
+            {filterText ||
+            Object.values(statsFilter).some((value) => value > 0) ||
+            selectedTypes.length > 0
+              ? "該当するお気に入りポケモンが見つかりません"
+              : "お気に入りのポケモンがありません"}
+          </p>
         )}
         <CardFaceSelector
           setCardFace={setGlobalCardFace}
