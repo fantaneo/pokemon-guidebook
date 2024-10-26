@@ -20,7 +20,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <TypeProvider>
           <SearchProvider>
             <StatsFilterProvider>
-              <Router>
+              <Router basename="/pokemon-guidebook">
                 <Routes>
                   <Route path="/" element={<PokemonCards />} />
                   <Route path="/pokemons" element={<PokemonCards />} />
