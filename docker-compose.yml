@@ -1,0 +1,15 @@
+version: "3"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/work:cached
+      - node_modules:/work/node_modules
+    ports:
+      - "5173:5173"
+    command: npm run dev
+
+volumes:
+  node_modules:
