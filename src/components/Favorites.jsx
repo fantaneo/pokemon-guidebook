@@ -77,19 +77,24 @@ export default function Favorites() {
       <div className="p-5">
         {finalFilteredPokemons.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
-              {finalFilteredPokemons.map((pokemon, index) => (
-                <div key={`${pokemon.name}-${index}`} className="w-full">
-                  <PokemonCard
-                    pokemon={pokemon}
-                    isFavorite={checkIsFavorite(pokemon)}
-                    toggleFavorite={() => {
-                      dispatch({ type: "TOGGLE_FAVORITE", payload: pokemon });
-                    }}
-                    initialCardFace={globalCardFace}
-                  />
-                </div>
-              ))}
+            <div className="flex justify-center">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+                {finalFilteredPokemons.map((pokemon, index) => (
+                  <div
+                    key={`${pokemon.name}-${index}`}
+                    className="w-full max-w-[256px]"
+                  >
+                    <PokemonCard
+                      pokemon={pokemon}
+                      isFavorite={checkIsFavorite(pokemon)}
+                      toggleFavorite={() => {
+                        dispatch({ type: "TOGGLE_FAVORITE", payload: pokemon });
+                      }}
+                      initialCardFace={globalCardFace}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </>
         ) : (
