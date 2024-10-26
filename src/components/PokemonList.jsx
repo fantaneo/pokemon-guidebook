@@ -70,30 +70,32 @@ export default function PokemonList({
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 p-4">
-        {filteredPokemons.map((pokemon, index) => (
-          <div
-            key={`${pokemon.name}-${index}`}
-            ref={
-              index === filteredPokemons.length - 1
-                ? lastPokemonElementRef
-                : null
-            }
-            className="w-full"
-          >
-            <PokemonCard
-              pokemon={pokemon}
-              isFavorite={checkIsFavorite(pokemon)}
-              toggleFavorite={() => {
-                dispatch({
-                  type: "TOGGLE_FAVORITE",
-                  payload: pokemon,
-                });
-              }}
-              initialCardFace={globalCardFace}
-            />
-          </div>
-        ))}
+      <div className="flex justify-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 p-4">
+          {filteredPokemons.map((pokemon, index) => (
+            <div
+              key={`${pokemon.name}-${index}`}
+              ref={
+                index === filteredPokemons.length - 1
+                  ? lastPokemonElementRef
+                  : null
+              }
+              className="w-full max-w-[256px]"
+            >
+              <PokemonCard
+                pokemon={pokemon}
+                isFavorite={checkIsFavorite(pokemon)}
+                toggleFavorite={() => {
+                  dispatch({
+                    type: "TOGGLE_FAVORITE",
+                    payload: pokemon,
+                  });
+                }}
+                initialCardFace={globalCardFace}
+              />
+            </div>
+          ))}
+        </div>
       </div>
       {isFetchingNextPage && (
         <p className="text-center mt-4">ポケモンをさらに読み込んでいます...</p>
