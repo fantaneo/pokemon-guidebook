@@ -1,13 +1,12 @@
 /* eslint-disable react/prop-types */
 import { useRef, useCallback, useEffect } from "react";
-import PokemonCard from "./PokemonCard/PokemonCard";
+import PokemonCard from "./PokemonCard";
+
 import { useContext } from "react";
 import { FavoritesContext } from "./FavoritesContext.jsx";
 import { isFavorite } from "./FavoriteReducer";
-import { useStatsFilterContext } from "../contexts/StatsFilterContext";
 
 export default function PokemonList({
-  data,
   filterText,
   fetchNextPage,
   hasNextPage,
@@ -18,7 +17,6 @@ export default function PokemonList({
 }) {
   const { favorites, dispatch } = useContext(FavoritesContext);
   const observer = useRef();
-  const { attackFilter } = useStatsFilterContext();
 
   const checkIsFavorite = useCallback(
     (pokemon) => {

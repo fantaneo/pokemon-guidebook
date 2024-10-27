@@ -36,7 +36,7 @@ export default function PokemonCardEvolution({ pokemon, cardBackground }) {
       className="w-full h-full flex flex-col p-2 rounded-xl overflow-y-auto"
       style={{ background: cardBackground }}
     >
-      <h2 className="text-xl font-bold mb-2">進化チェーン</h2>
+      <h2 className="text-xl font-bold mb-2">ポケモンの進化</h2>
       <div className="flex flex-col items-center justify-start flex-grow -space-y-4">
         {Array.isArray(evolutionStages) && evolutionStages.length > 0 ? (
           evolutionStages.map((stage, index) => (

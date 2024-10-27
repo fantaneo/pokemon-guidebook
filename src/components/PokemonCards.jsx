@@ -1,13 +1,10 @@
 import { useState, useMemo } from "react";
-import Header from "./Header";
-import SideMenu from "./SideMenu";
 import PokemonList from "./PokemonList";
 import { usePokemonData } from "../hooks/usePokemonData";
 import { useTypeFiltering } from "../hooks/useTypeFiltering";
 import { useTypeContext } from "../hooks/useTypeContext";
 import { useSearchContext } from "../contexts/SearchContext";
 import { useStatsFilterContext } from "../contexts/StatsFilterContext";
-import PokemonTitle from "./PokemonTitle";
 import Layout from "./Layout";
 import CardFaceSelector from "./CardFaceSelector";
 
@@ -57,7 +54,6 @@ export default function PokemonCards() {
     <Layout>
       <div className="p-5">
         <PokemonList
-          data={data}
           filterText={filterText}
           fetchNextPage={fetchNextPage}
           hasNextPage={hasNextPage}

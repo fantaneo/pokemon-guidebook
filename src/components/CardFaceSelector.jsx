@@ -15,7 +15,7 @@ const CardFaceSelector = ({ setCardFace, triggerAnimation }) => {
           key={index}
           onClick={() => handleFaceChange(index)}
           className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 
-                     text-white font-bold py-2 px-4 rounded-full shadow-lg 
+                     text-white font-bold py-2 px-4 rounded-md shadow-lg 
                      transition duration-300 ease-in-out transform hover:scale-105 
                      focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
         >
