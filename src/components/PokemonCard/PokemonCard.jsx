@@ -12,10 +12,11 @@ export default function PokemonCard({
   pokemon,
   toggleFavorite,
   isFavorite,
-  initialCardFace = 0, // ここでデフォルト値を設定
+  initialCardFace = 0,
 }) {
   const [cardFace, setCardFace] = useState(initialCardFace);
   const [isFlipping, setIsFlipping] = useState(false);
+  const [key, setKey] = useState(0);
 
   useEffect(() => {
     if (cardFace !== initialCardFace) {
@@ -23,6 +24,7 @@ export default function PokemonCard({
       setTimeout(() => {
         setCardFace(initialCardFace);
         setIsFlipping(false);
+        setKey((prev) => prev + 1);
       }, 300);
     }
   }, [initialCardFace]);
@@ -32,6 +34,7 @@ export default function PokemonCard({
     setTimeout(() => {
       setCardFace((prevFace) => (prevFace + 1) % 4);
       setIsFlipping(false);
+      setKey((prev) => prev + 1);
     }, 300);
   };
 
@@ -58,7 +61,11 @@ export default function PokemonCard({
           isFlipping ? "flip-card" : ""
         }`}
       >
-        <PokemonCardStats pokemon={pokemon} cardBackground={cardBackground} />
+        <PokemonCardStats
+          key={key}
+          pokemon={pokemon}
+          cardBackground={cardBackground}
+        />
       </div>
 
       <div

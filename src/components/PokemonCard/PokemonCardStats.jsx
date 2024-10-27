@@ -1,5 +1,5 @@
+import React, { useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
-import { useState, useEffect, useMemo } from "react";
 import {
   typeTranslations,
   getTypeColor,
@@ -10,8 +10,10 @@ export default function PokemonCardStats({ pokemon, cardBackground }) {
   const [animateStats, setAnimateStats] = useState(false);
 
   useEffect(() => {
+    // コンポーネントがマウントされたらアニメーションを開始
     setAnimateStats(true);
-    const timer = setTimeout(() => setAnimateStats(false), 1000);
+    // アニメーション終了後にフラグをリセット
+    const timer = setTimeout(() => setAnimateStats(false), 1500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -73,14 +75,14 @@ export default function PokemonCardStats({ pokemon, cardBackground }) {
             >
               {stat.value}
             </span>
-            <div className="w-1/2 bg-gray-200 rounded-full h-2">
+            <div className="w-1/2 bg-gray-200 rounded-full h-2 overflow-hidden">
               <div
                 className={`h-2 rounded-full ${
                   stat.value === maxStat ? "bg-indigo-600" : "bg-teal-500"
                 } ${animateStats ? "animate-stat-bar" : ""}`}
                 style={{
                   width: animateStats
-                    ? 0
+                    ? "0%"
                     : `${calculateStatPercentage(stat.value)}%`,
                   animationDelay: `${index * 100}ms`,
                   "--stat-width": `${calculateStatPercentage(stat.value)}%`,
