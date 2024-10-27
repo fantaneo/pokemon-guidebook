@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
-import { useRef, useCallback, useEffect, useMemo } from "react";
-import PokemonCard from "./PokemonCard";
+import { useRef, useCallback, useEffect } from "react";
+import PokemonCard from "./PokemonCard/PokemonCard";
 import { useContext } from "react";
 import { FavoritesContext } from "./FavoritesContext.jsx";
 import { isFavorite } from "./FavoriteReducer";
