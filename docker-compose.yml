@@ -5,8 +5,8 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - .:/work:cached
-      - node_modules:/work/node_modules
+      - .:/work:delegated
+      - node_modules:/work/node_modules:delegated
     ports:
       - "5173:5173"
     command: npm run dev
