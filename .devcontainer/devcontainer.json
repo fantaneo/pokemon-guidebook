@@ -8,12 +8,18 @@
       "extensions": [
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
+        "ms-azuretools.vscode-docker",
         "dsznajder.es7-react-js-snippets",
-        "bradlc.vscode-tailwindcss"
+        "wenfangdu.jump",
+        "wallabyjs.console-ninja",
+        "eamodio.gitlens",
+        "bradlc.vscode-tailwindcss",
+        "oderwat.indent-rainbow",
+        "kahole.magit"
       ]
     }
   },
   "forwardPorts": [5173],
   "postCreateCommand": "npm install",
-  "remoteUser": "node"
+  "remoteUser": "root"
 }
